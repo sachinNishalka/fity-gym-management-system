@@ -12,6 +12,7 @@ import java.util.Date;
 public class Member {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int Id;
     @Column(nullable = false, name = "first_name")
     private String firstName;
@@ -21,8 +22,10 @@ public class Member {
     @Column(nullable = false, name = "phone_number")
     private String phoneNumber;
     private String email;
-//    TODO : check the way to get the current date here
-//    private LocalDate joinedDate = LocalDate.ofInstant(new Date().toInstant().atZone(ZoneId.systemDefault()));
+//     check the way to get the current date here
+    @Column(nullable = false, name = "joined_date")
+    private LocalDate joinedDate = LocalDate.now();
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "status")
     private MemberStatus status;
 }
