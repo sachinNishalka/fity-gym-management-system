@@ -54,11 +54,9 @@ public class Payments {
 
     private String note;
     
-    // TODO: CRITICAL - After payment is saved, trigger business logic:
-    // TODO: 1. Check if subscription is fully paid (compare total payments vs net_amount)
-    // TODO: 2. If fully paid AND subscription is BLOCKED, change status to ACTIVE
+    
     // TODO: 3. If fully paid, update member_access to ALLOWED (unblock door)
-    // TODO: 4. Consider using @PostPersist to trigger these checks
+
     
     // TODO: VALIDATION - Prevent duplicate receipt numbers (add unique constraint)
     // TODO: VALIDATION - Prevent payments for subscriptions that haven't been created yet

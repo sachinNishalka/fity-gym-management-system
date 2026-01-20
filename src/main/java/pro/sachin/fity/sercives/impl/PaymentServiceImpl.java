@@ -1,20 +1,94 @@
 package pro.sachin.fity.sercives.impl;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import pro.sachin.fity.dto.PaymentDTO;
 import pro.sachin.fity.model.Payments;
 import pro.sachin.fity.repository.PyamentRepository;
+import pro.sachin.fity.repository.SubscriptionChargesRepository;
+import pro.sachin.fity.repository.SubscriptionRepository;
 import pro.sachin.fity.sercives.PaymentService;
+import pro.sachin.fity.model.Subscription;
+import pro.sachin.fity.model.SubscriptionCharges;
+import pro.sachin.fity.model.SubscriptionStatus;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class PaymentServiceImpl implements PaymentService {
     
     private final PyamentRepository paymentRepository;
-
+    private final SubscriptionRepository subscriptionRepository;
+    private final SubscriptionChargesRepository subscriptionChargesRepository;
+    
     @Override
-    public void savePayment(Payments payments) {
-        paymentRepository.save(payments);
+    @Transactional
+    public void savePayment(PaymentDTO paymentDTO) {
+
+        final Payments payments = new Payments();
+
+        if (paymentDTO.getSubscriptionId() != null) {
+            Subscription subscription = subscriptionRepository.findById(paymentDTO.getSubscriptionId())
+                    .orElseThrow(() -> new EntityNotFoundException("Subscription is not found"));
+            payments.setSubscription(subscription);
+        }
+        
+        payments.setAmount(paymentDTO.getAmount());
+        payments.setReceiptNo(paymentDTO.getRecieptNo());
+        payments.setNote(paymentDTO.getNote());
+
+
+       Payments savedPayment = paymentRepository.save(payments);
+        log.info("Payment saved : {} for subscription {}", payments.getAmount(), payments.getSubscription().getId());
+        processPostPayment(savedPayment.getSubscription().getId());
     }
+
+
+    private void processPostPayment(Long subscriptionId) {
+        boolean isFullyPaid = checkIfSubscriptionIsFullyPaid(subscriptionId);
+        if(isFullyPaid) {
+            log.info("Subscription {} is fully paid", subscriptionId);
+            reActivateSubscriptionIfBlocked(subscriptionId);
+        }else{
+            log.info("Subscription {} is not fully paid, has outstanding balance", subscriptionId);
+        }
+    }
+
+
+    private boolean checkIfSubscriptionIsFullyPaid(Long subscriptionId) {
+
+        List<Payments> payments = paymentRepository.findBySubscriptionId(subscriptionId);
+
+        BigDecimal totalPaid = payments.stream().map(payment -> payment.getAmount()).reduce(BigDecimal.ZERO, BigDecimal::add);
+    
+        SubscriptionCharges subscriptionCharges = subscriptionChargesRepository.findBySubscriptionId(subscriptionId).orElseThrow(() -> new IllegalStateException("Subscription charges not found"));
+    
+        BigDecimal netAmount = subscriptionCharges.getNetAmount();
+
+        boolean isFullyPaid = totalPaid.compareTo(netAmount) >= 0;
+
+        log.info("Subscription {}: Paid {}, Required {}, Fully Paid: {}", subscriptionId, totalPaid, netAmount, isFullyPaid);
+
+        return isFullyPaid;
+    }
+
+
+    private void reActivateSubscriptionIfBlocked(Long subscriptionId) {
+
+        Subscription subscription = subscriptionRepository.findById(subscriptionId).orElseThrow(() -> new IllegalStateException("Subscription not found"));
+
+        if(subscription.getStatus() == SubscriptionStatus.BLOCKED) {
+            subscription.setStatus(SubscriptionStatus.ACTIVE);
+            subscriptionRepository.save(subscription);
+            log.info("Subscription {} reactivated", subscriptionId);
+        }
+    }
+
 }

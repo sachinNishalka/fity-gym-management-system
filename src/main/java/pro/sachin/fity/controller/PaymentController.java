@@ -2,6 +2,7 @@ package pro.sachin.fity.controller;
 
 
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,40 +26,22 @@ public class PaymentController {
     // TODO: CRITICAL - Repository should NOT be in controller - move to service
     private final SubscriptionRepository subscriptionRepository;
     
-    // TODO: CRITICAL - This method is missing critical business logic
-    // TODO: After payment is saved, you need to:
-    //       1. Check if subscription is fully paid
+  
     //       2. If fully paid, update member_access to ALLOWED (unblock door)
-    //       3. If subscription was BLOCKED, change status to ACTIVE
     //       4. Generate receipt number if not provided
     //       5. Validate payment amount doesn't exceed balance due
     
-    // TODO: CRITICAL - Move all repository logic to service layer
-    // TODO: Controller should only validate input and call service method
+   
     
-    // TODO: Return HttpStatus.CREATED (201) not OK (200)
+ 
     // TODO: Return PaymentResponseDTO with updated balance information
+    
     @PostMapping("/save")
-    ResponseEntity<Payments> savePayment(@RequestBody PaymentDTO paymentDTO) {
-        
-        // TODO: ALL THIS LOGIC BELONGS IN SERVICE LAYER
-        final Payments payments = new Payments();
-        
-        if (paymentDTO.getSubscriptionId() != null) {
-            Subscription subscription = subscriptionRepository.findById(paymentDTO.getSubscriptionId())
-                    .orElseThrow(() -> new EntityNotFoundException("Subscription is not found"));
-            payments.setSubscription(subscription);
-        }
-        
-        payments.setAmount(paymentDTO.getAmount());
-        payments.setPaidOn(paymentDTO.getPaidOn());
-        payments.setReceiptNo(paymentDTO.getRecieptNo());
-        payments.setNote(paymentDTO.getNote());
-        
-        // TODO: CRITICAL - After saving payment, trigger post-payment logic
-        paymentService.savePayment(payments);
-        
-        return ResponseEntity.ok(payments);
+    ResponseEntity<PaymentDTO> savePayment(@RequestBody PaymentDTO paymentDTO) {
+       
+        paymentService.savePayment(paymentDTO);
+       
+        return ResponseEntity.status(HttpStatus.CREATED).body(paymentDTO);
     }
     
     // TODO: IMPLEMENT - Record payment with automatic receipt generation

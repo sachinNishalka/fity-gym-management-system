@@ -2,6 +2,8 @@ package pro.sachin.fity.controller;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,65 +27,13 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
-    // TODO: CRITICAL - These repositories should NOT be in controller
-    // TODO: Move all this logic to SubscriptionService layer
-    private final MemberRepository memberRepository;
-    private final FamilyRepository familyRepository;
-    private final PlanRepository planRepository;
+   
+    @PostMapping("/subscribe")
+    ResponseEntity<SubscriptionDTO> subscribe(@RequestBody SubscriptionDTO subscriptionDTO) {
+      
+        subscriptionService.saveSubscription(subscriptionDTO);
 
-    // TODO: CRITICAL - This endpoint is doing TOO MUCH manual work
-    // TODO: The entire method body should be moved to SubscriptionService
-    // TODO: Controller should only validate request and call service method
-    
-    // TODO: CRITICAL - Don't ask client to provide: endDate, dueDate, graceEndDate, status
-    // TODO: These should be AUTO-CALCULATED in service layer
-    
-    // TODO: CRITICAL - This should also create SubscriptionCharges automatically
-    // TODO: Use @Transactional to ensure subscription + charges are created together
-    
-    // TODO: CRITICAL - This should also update MemberAccess if payment is included
-    
-    // TODO: Rename endpoint to /enroll or /create (more descriptive)
-    // TODO: Return HttpStatus.CREATED (201) not OK (200)
-    // TODO: Return SubscriptionResponseDTO with complete enrollment details
-    @PostMapping("/save")
-    ResponseEntity<Subscription> saveSubscription(@RequestBody SubscriptionDTO subscriptionDTO) {
-
-        // TODO: ALL THIS LOGIC BELONGS IN SERVICE LAYER, NOT CONTROLLER
-        final Subscription subscription = new Subscription();
-
-        // checking for member id
-        if (subscriptionDTO.getMemberId() != null) {
-            Member member = memberRepository.findById(subscriptionDTO.getMemberId())
-                    .orElseThrow(() -> new EntityNotFoundException("Member is not found"));
-            subscription.setMember(member);
-        }
-        // checking for family id
-
-        if (subscriptionDTO.getFamilyId() != null) {
-            Family family = familyRepository.findById(subscriptionDTO.getFamilyId())
-                    .orElseThrow(() -> new EntityNotFoundException("Family is not found"));
-            subscription.setFamily(family);
-        }
-
-        // checking for plan id
-
-        if (subscriptionDTO.getPlanId() != null) {
-            Plan plan = planRepository.findById(subscriptionDTO.getPlanId())
-                    .orElseThrow(() -> new EntityNotFoundException("Plan is not found"));
-            subscription.setPlan(plan);
-        }
-
-        // TODO: CLIENT SHOULD NOT PROVIDE THESE DATES - AUTO-CALCULATE THEM
-        subscription.setStartDate(subscriptionDTO.getStartDate());
-        subscription.setEndDate(subscriptionDTO.getEndDate());
-        subscription.setDueDate(subscriptionDTO.getDueDate());
-        subscription.setGraceEndDate(subscriptionDTO.getGraceEndDate());
-        subscription.setStatus(SubscriptionStatus.valueOf(subscriptionDTO.getStatus()));
-
-        subscriptionService.saveSubscription(subscription);
-
-        return ResponseEntity.ok(subscription);
+        return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionDTO);
     }
     
     // TODO: BETTER APPROACH - Create new endpoint: POST /api/v1/subscription/enroll

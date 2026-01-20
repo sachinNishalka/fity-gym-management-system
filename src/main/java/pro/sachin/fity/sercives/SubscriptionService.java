@@ -1,30 +1,20 @@
 package pro.sachin.fity.sercives;
 
+import java.math.BigDecimal;
+
+import pro.sachin.fity.dto.SubscriptionDTO;
 import pro.sachin.fity.model.Subscription;
 
 public interface SubscriptionService {
-    // TODO: CRITICAL - This method is too simple - needs complete rewrite
-    // TODO: This should NOT accept fully built Subscription entity
-    // TODO: Should accept SubscriptionEnrollmentDTO with minimal fields:
-    //       - memberId OR familyId (not both)
-    //       - planId
-    //       - startDate (optional, defaults to today)
-    //       - discountAmount (optional, defaults to 0)
-    //       - initialPaymentAmount (optional)
-    // TODO: This method should do ALL the business logic:
-    //       1. Validate member/family and plan exist
-    //       2. Check no overlapping active subscriptions
-    //       3. Validate plan type matches (KIDS age check, FAMILY member count)
-    //       4. AUTO-CALCULATE dates (endDate, dueDate, graceEndDate)
-    //       5. Set status = ACTIVE
-    //       6. Create Subscription
-    //       7. Create SubscriptionCharges automatically
-    //       8. If initialPayment > 0, create Payment record
-    //       9. Update MemberAccess based on payment status
-    //       10. Schedule notification reminder
-    //       11. Return complete enrollment summary
-    // TODO: Use @Transactional to ensure all steps succeed or rollback
-    void saveSubscription(Subscription subscription);
+
+// COMPLETED: Accepts DTO, validates entities, checks overlaps, auto-calculates dates, creates charges
+// TODO: Still needed:
+//       - Validate plan type matches (KIDS age check, FAMILY member count)
+//       - If initialPayment > 0, create Payment record
+//       - Update MemberAccess based on payment status
+//       - Schedule notification reminder
+//       - Return SubscriptionResponseDTO instead of void
+    void saveSubscription(SubscriptionDTO subscriptionDTO);
     
     // TODO: IMPLEMENT - Enroll member/family in plan (better approach)
     // TODO: SubscriptionEnrollmentResponse enrollInPlan(SubscriptionEnrollmentRequest request);

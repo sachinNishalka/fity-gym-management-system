@@ -1,5 +1,6 @@
 package pro.sachin.fity.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import lombok.Data;
@@ -12,7 +13,7 @@ public class PaymentDTO  {
     
     // TODO: REQUEST - Required field
     // TODO: Add validation: @NotNull, @Positive
-    private Integer subscriptionId;
+    private Long subscriptionId;
     
     // TODO: RESPONSE ONLY - For display purposes
     // TODO: Should show member/family name, not "subscription name"
@@ -22,12 +23,12 @@ public class PaymentDTO  {
     // TODO: CRITICAL - Change from 'double' to 'BigDecimal' for accurate money handling
     // TODO: Add validation: @NotNull, @Positive, @DecimalMin("0.01")
     // TODO: Add validation: amount should not exceed balance due
-    private double amount;
+    private BigDecimal amount;
     
     // TODO: CRITICAL - Should NOT be in request - auto-set to current timestamp
     // TODO: RESPONSE ONLY
     // TODO: Change to LocalDateTime to match SQL TIMESTAMP type
-    private LocalDate paidOn;
+    // private LocalDate paidOn;
     
     // TODO: CRITICAL - Receipt number should be AUTO-GENERATED, not provided by client
     // TODO: Can be optional in request (if not provided, generate automatically)

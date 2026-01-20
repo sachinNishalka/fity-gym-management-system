@@ -2,6 +2,7 @@ package pro.sachin.fity.dto;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 // TODO: CRITICAL - This DTO has wrong purpose - it's mixing request and response
@@ -88,5 +89,7 @@ public class SubscriptionDTO {
     // TODO: 3. SubscriptionListDTO (for list views)
     //          - Minimal fields for performance
     //          - id, memberName, planName, endDate, status, balanceDue
+
+    private BigDecimal discountAmount;
 }
 

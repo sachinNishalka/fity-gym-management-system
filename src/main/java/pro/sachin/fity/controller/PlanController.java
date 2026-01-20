@@ -1,11 +1,15 @@
 package pro.sachin.fity.controller;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import pro.sachin.fity.dto.PlanDTO;
 import pro.sachin.fity.model.Plan;
 import pro.sachin.fity.sercives.PlanService;
 
@@ -22,9 +26,9 @@ public class PlanController {
     // TODO: Return HttpStatus.CREATED (201) not OK (200)
     // TODO: Validate plan type specific fields (ageMin/Max for KIDS, maxMembers for FAMILY)
     @PostMapping("/create")
-    ResponseEntity<Plan> createPlan(@RequestBody Plan plan){
-        planService.createPlan(plan);
-        return ResponseEntity.ok(plan);
+    ResponseEntity<PlanDTO> createPlan(@RequestBody PlanDTO planDTO){
+        planService.createPlan(planDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(planDTO);
     }
     
     // TODO: IMPLEMENT - Get all active plans

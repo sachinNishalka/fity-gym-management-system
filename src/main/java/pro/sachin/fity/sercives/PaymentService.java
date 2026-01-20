@@ -1,5 +1,6 @@
 package pro.sachin.fity.sercives;
 
+import pro.sachin.fity.dto.PaymentDTO;
 import pro.sachin.fity.model.Payments;
 
 public interface PaymentService {
@@ -11,7 +12,7 @@ public interface PaymentService {
     //       4. Send payment confirmation notification
     //       5. Cancel pending reminder notifications if fully paid
     // TODO: Use @Transactional to ensure atomic updates
-    void savePayment(Payments payments);
+    void savePayment(PaymentDTO paymentDTO);
     
     // TODO: IMPLEMENT - Record payment with auto-generated receipt
     // TODO: PaymentResponseDTO recordPayment(PaymentRecordRequest request);

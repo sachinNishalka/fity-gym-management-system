@@ -2,14 +2,15 @@ package pro.sachin.fity.sercives;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import pro.sachin.fity.dto.MemberDTO;
 import pro.sachin.fity.model.Member;
 
 public interface MemberService {
-    // TODO: Change parameter from Member entity to MemberRegistrationDTO
-    // TODO: This method should set default values (status=ACTIVE, joinedDate=today)
+   
     // TODO: This method should also create MemberAccess record with status=BLOCKED
     // TODO: Member gets ALLOWED access only after subscribing and paying
-    void registerMember(Member member);
+    void registerMember(MemberDTO memberDTO);
     
     // TODO: IMPLEMENT - Update member details
     // TODO: Member updateMember(Long memberId, MemberUpdateDTO updateDTO);

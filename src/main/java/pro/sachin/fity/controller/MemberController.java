@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import pro.sachin.fity.dto.MemberDTO;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.sercives.MemberService;
 
@@ -17,16 +19,11 @@ import pro.sachin.fity.sercives.MemberService;
 public class MemberController {
     private final MemberService memberService;
     
-    // TODO: CRITICAL - Don't accept entire Member entity in request body
-    // TODO: Create MemberRegistrationDTO with only required fields (firstName, lastName, phone, email, DOB)
-    // TODO: Set default status to ACTIVE in service layer
-    // TODO: Set joinedDate automatically in service layer
-    // TODO: Return proper HTTP status: HttpStatus.CREATED (201) not OK (200)
-    // TODO: Consider returning MemberDTO instead of Member entity (avoid exposing internal structure)
+    
     @PostMapping("/register")
-    ResponseEntity<Member> registerMember(@RequestBody Member member){
-        memberService.registerMember(member);
-        return ResponseEntity.ok(member);
+    ResponseEntity<MemberDTO> registerMember(@RequestBody MemberDTO memberDTO){
+        memberService.registerMember(memberDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberDTO);
     }
     
     // TODO: IMPLEMENT - Update member endpoint
