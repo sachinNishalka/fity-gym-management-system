@@ -1,0 +1,40 @@
+// Pseudocode for door scanner service
+public void onCardScanned(String cardNumber) {
+    Member member = findMemberByCard(cardNumber);
+    
+    // Check access (your existing MemberAccess logic)
+    MemberAccess access = memberAccessRepository.findById(member.getId());
+    
+    if (access.getAccessStatus() == AccessStatus.ALLOWED 
+        && LocalDate.now().isBefore(access.getAllowedUntil())) {
+        
+        // Open door
+        doorController.unlock();
+        
+        // Record attendance
+        Attendance attendance = new Attendance();
+        attendance.setMember(member);
+        attendance.setCapturedBy(CapturedBy.DOOR);
+        attendance.setSubscription(getActiveSubscription(member));
+        attendanceRepository.save(attendance);
+        
+        log.info("Member {} checked in at {}", member.getId(), LocalDateTime.now());
+    } else {
+        // Deny access
+        doorController.keepLocked();
+        log.warn("Access denied for member {}", member.getId());
+    }
+}
+// GET /api/v1/attendance/inactive-members?days=7
+public List<InactiveMemberDTO> getInactiveMembers(int days) {
+    // Implement the "no visit" query from your SQL
+    LocalDateTime cutoffDate = LocalDateTime.now().minusDays(days);
+    return attendanceRepository.findInactiveMembers(cutoffDate);
+}
+
+// GET /api/v1/attendance/inactive-members?days=7
+public List<InactiveMemberDTO> getInactiveMembers(int days) {
+    // Implement the "no visit" query from your SQL
+    LocalDateTime cutoffDate = LocalDateTime.now().minusDays(days);
+    return attendanceRepository.findInactiveMembers(cutoffDate);
+}
