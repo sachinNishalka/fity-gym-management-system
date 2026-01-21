@@ -10,10 +10,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import pro.sachin.fity.dto.PaymentDTO;
+import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.Payments;
 import pro.sachin.fity.repository.PyamentRepository;
 import pro.sachin.fity.repository.SubscriptionChargesRepository;
 import pro.sachin.fity.repository.SubscriptionRepository;
+import pro.sachin.fity.sercives.MemberAccessService;
 import pro.sachin.fity.sercives.PaymentService;
 import pro.sachin.fity.model.Subscription;
 import pro.sachin.fity.model.SubscriptionCharges;
@@ -27,6 +29,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PyamentRepository paymentRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionChargesRepository subscriptionChargesRepository;
+    private final MemberAccessService memberAccessService;
     
     @Override
     @Transactional
@@ -48,6 +51,8 @@ public class PaymentServiceImpl implements PaymentService {
        Payments savedPayment = paymentRepository.save(payments);
         log.info("Payment saved : {} for subscription {}", payments.getAmount(), payments.getSubscription().getId());
         processPostPayment(savedPayment.getSubscription().getId());
+        memberAccessService.updateMemberAccess(savedPayment.getSubscription().getMember().getId(), savedPayment.getSubscription().getGraceEndDate(), AccessStatus.ALLOWED, "Full payment done!");
+
     }
 
 

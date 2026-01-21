@@ -9,9 +9,12 @@ import org.springframework.stereotype.Component;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import pro.sachin.fity.model.AccessStatus;
+import pro.sachin.fity.model.MemberAccess;
 import pro.sachin.fity.model.Subscription;
 import pro.sachin.fity.model.SubscriptionStatus;
 import pro.sachin.fity.repository.SubscriptionRepository;
+import pro.sachin.fity.sercives.MemberAccessService;
 
 @Component
 @RequiredArgsConstructor
@@ -19,6 +22,7 @@ import pro.sachin.fity.repository.SubscriptionRepository;
 public class SubscriptionStatusScheduler {
     
     private final SubscriptionRepository subscriptionRepository;
+    private final MemberAccessService memberAccessService;
     
     @Scheduled(cron = "0 0 2 * * *")
     @Transactional
@@ -46,9 +50,14 @@ public class SubscriptionStatusScheduler {
         List<Subscription> subscriptions = subscriptionRepository.findByGraceEndDateBeforeAndStatus(today, SubscriptionStatus.IN_GRACE);
 
         if(!subscriptions.isEmpty()) {
-            subscriptions.forEach(subscription -> subscription.setStatus(SubscriptionStatus.BLOCKED));
+            subscriptions.forEach(subscription -> {subscription.setStatus(SubscriptionStatus.BLOCKED);
+                memberAccessService.updateMemberAccess(subscription.getMember().getId(), today, AccessStatus.BLOCKED, "Not done payment");
+            });
         }
         subscriptionRepository.saveAll(subscriptions);
         log.info("Blocked expired subscriptions {} ", subscriptions.size());
+
+        
     }
+
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import pro.sachin.fity.dto.SubscriptionDTO;
+import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.Family;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.model.Plan;
@@ -22,6 +23,7 @@ import pro.sachin.fity.repository.MemberRepository;
 import pro.sachin.fity.repository.PlanRepository;
 import pro.sachin.fity.repository.SubscriptionChargesRepository;
 import pro.sachin.fity.repository.SubscriptionRepository;
+import pro.sachin.fity.sercives.MemberAccessService;
 import pro.sachin.fity.sercives.SubscriptionService;
 
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionChargesRepository subscriptionChargesRepository;
     private final MemberRepository memberRepository;
     private final FamilyRepository familyRepository;
+    private final MemberAccessService memberAccessService;
 
     @Transactional
     @Override
@@ -80,6 +83,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         Subscription savedSubscription = subscriptionRepository.save(subscription);
         createSubscriptionCharges(savedSubscription, subscriptionDTO.getDiscountAmount());
+
+        // here i think we should consider about getting the payment too
+        memberAccessService.updateMemberAccess(subscription.getMember().getId(), graceEndDate, AccessStatus.ALLOWED, "Subscription created, new joinee");
+
     }
 
     private LocalDate calculateEndDate(LocalDate startDate, Plan plan) {
@@ -132,6 +139,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         subscriptionChargesRepository.save(subscriptionCharges);
     }
+
+
+    // here grace extension by corch 
+    // manual overwritten of member access by admin
 
    
 

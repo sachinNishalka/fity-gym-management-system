@@ -18,7 +18,7 @@ public class SubscriptionDTO {
 
     // TODO: REQUEST - Only provide ONE of memberId or familyId, never both
     // TODO: Add validation: @NotNull when creating subscription
-    private Integer memberId;
+    private Long memberId;
     
     // TODO: RESPONSE ONLY - For display purposes
     private String memberName;
