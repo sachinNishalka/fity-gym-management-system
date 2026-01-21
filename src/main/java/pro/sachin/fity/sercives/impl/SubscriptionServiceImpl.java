@@ -85,7 +85,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         createSubscriptionCharges(savedSubscription, subscriptionDTO.getDiscountAmount());
 
         // here i think we should consider about getting the payment too
-        memberAccessService.updateMemberAccess(subscription.getMember().getId(), graceEndDate, AccessStatus.ALLOWED, "Subscription created, new joinee");
+        
+        // memberAccessService.updateMemberAccess(subscription.getMember().getId(), graceEndDate, AccessStatus.ALLOWED, "Subscription created, new joinee");
+
+        if(subscription.getMember()!=null){
+            memberAccessService.updateMemberAccess(savedSubscription.getMember().getId(), graceEndDate, AccessStatus.ALLOWED, "New subscription created!");
+        }else if (subscription.getFamily()!=null){
+        // Family subscription - grant access to all family members
+        // TODO: Need to implement family member access handling
+        // For now, you might skip this or implement basic logic                                        
+        }
+       
 
     }
 

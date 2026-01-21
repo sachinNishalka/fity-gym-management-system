@@ -51,7 +51,9 @@ public class PaymentServiceImpl implements PaymentService {
        Payments savedPayment = paymentRepository.save(payments);
         log.info("Payment saved : {} for subscription {}", payments.getAmount(), payments.getSubscription().getId());
         processPostPayment(savedPayment.getSubscription().getId());
-        memberAccessService.updateMemberAccess(savedPayment.getSubscription().getMember().getId(), savedPayment.getSubscription().getGraceEndDate(), AccessStatus.ALLOWED, "Full payment done!");
+
+        // member access update issue with family and single persons
+       
 
     }
 
@@ -61,6 +63,16 @@ public class PaymentServiceImpl implements PaymentService {
         if(isFullyPaid) {
             log.info("Subscription {} is fully paid", subscriptionId);
             reActivateSubscriptionIfBlocked(subscriptionId);
+
+            Subscription subscription = subscriptionRepository.findById(subscriptionId).orElseThrow(()-> new EntityNotFoundException("Subscription is not found to update access records!"));
+            if(subscription.getMember()!=null){
+                memberAccessService.updateMemberAccess(subscription.getMember().getId(), subscription.getGraceEndDate(), AccessStatus.ALLOWED, "Payment made and subcription restored!");
+            }else if(subscription.getFamily() !=null){
+                // This should be updated with family subscriptioin - we havent implemeted yet TODO
+                log.info("Family Subscription fully paid!");
+            }
+
+
         }else{
             log.info("Subscription {} is not fully paid, has outstanding balance", subscriptionId);
         }
@@ -95,5 +107,7 @@ public class PaymentServiceImpl implements PaymentService {
             log.info("Subscription {} reactivated", subscriptionId);
         }
     }
+
+
 
 }

@@ -51,7 +51,12 @@ public class SubscriptionStatusScheduler {
 
         if(!subscriptions.isEmpty()) {
             subscriptions.forEach(subscription -> {subscription.setStatus(SubscriptionStatus.BLOCKED);
-                memberAccessService.updateMemberAccess(subscription.getMember().getId(), today, AccessStatus.BLOCKED, "Not done payment");
+                
+                if(subscription.getMember() != null){
+                    memberAccessService.updateMemberAccess(subscription.getMember().getId(), today, AccessStatus.BLOCKED, "Grace period expired");
+                }else if(subscription.getFamily()!=null){
+                    // TODO: this family subscription should be blocked
+                }
             });
         }
         subscriptionRepository.saveAll(subscriptions);

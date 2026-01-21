@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -40,6 +42,7 @@ public class MemberAccess {
     private LocalDateTime updatedAt;
 
     // user should be added here later
+    @Enumerated(EnumType.STRING)
     @Column(name = "access_status", nullable = false)
     private AccessStatus accessStatus;
 
