@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import pro.sachin.fity.dto.GraceExtensionDTO;
@@ -31,6 +32,7 @@ public class GraceExtensionServiceImpl implements GraceExtensionService {
     
 
     @Override
+    @Transactional
     public GraceExtension extendGracePeriod(Long subscriptionId, LocalDate newGraceEndDate, String reason,
             Long extendedByUserId) {
             
