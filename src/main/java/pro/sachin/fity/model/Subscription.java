@@ -41,15 +41,13 @@ public class Subscription {
     private Plan plan;
 
     // ============= DATES - CRITICAL BUSINESS LOGIC =============
-    
+
     // TODO: This is the only date that should be provided by user/frontend
     @Column(nullable = false, name = "start_date")
     private LocalDate startDate;
 
-
     @Column(nullable = false, name = "end_date")
     private LocalDate endDate;
-
 
     @Column(nullable = false, name = "due_date")
     private LocalDate dueDate;
@@ -57,7 +55,6 @@ public class Subscription {
     @Column(nullable = false, name = "grace_end_date")
     private LocalDate graceEndDate;
 
- 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SubscriptionStatus status;
@@ -70,40 +67,37 @@ public class Subscription {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-
     // TODO: MISSING - Add @OneToOne relationship to SubscriptionCharges
-
+    @OneToOne(mappedBy = "subscription", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private SubscriptionCharges subscriptionCharges;
 
     // TODO: MISSING - Add @OneToMany relationship to Payments
 
-
     // TODO: MISSING - Add @OneToMany relationship to GraceExtensions
 
-
-  
     // ============= VALIDATION LOGIC =============
-    
+
     @PrePersist
     @PreUpdate
-    private void validateRequestDetailsAtEntityLevel(){
+    private void validateRequestDetailsAtEntityLevel() {
         boolean hasMember = member != null;
         boolean hasFamily = family != null;
 
-        if(hasMember == hasFamily){
+        if (hasMember == hasFamily) {
             // TODO: YES - Create custom exception: InvalidSubscriptionException
             // TODO: Handle globally with @ControllerAdvice
             throw new IllegalStateException("Subscription must have either member or family, not both");
         }
-        
+
         // TODO: ADD - Auto-calculate dates here in @PrePersist
         // TODO: ADD - Validate plan type matches member/family type
         // TODO: ADD - If KIDS plan, validate member age is within plan's age range
         // TODO: ADD - If FAMILY plan, validate family has correct number of members
     }
-    
+
     // TODO: FUTURE - Add helper method to check if subscription is expired
     // TODO: FUTURE - Add helper method to check if in grace period
     // TODO: FUTURE - Add helper method to calculate remaining days
-    // TODO: FUTURE - Add helper method to check if fully paid (sum payments vs charge)
+    // TODO: FUTURE - Add helper method to check if fully paid (sum payments vs
+    // charge)
 }

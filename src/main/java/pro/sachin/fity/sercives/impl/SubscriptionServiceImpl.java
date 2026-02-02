@@ -1,6 +1,7 @@
 package pro.sachin.fity.sercives.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,6 +27,7 @@ import pro.sachin.fity.repository.SubscriptionRepository;
 import pro.sachin.fity.sercives.MemberAccessService;
 import pro.sachin.fity.sercives.SubscriptionService;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
@@ -68,34 +70,48 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
 
         // TODO: CLIENT SHOULD NOT PROVIDE THESE DATES - AUTO-CALCULATE THEM
-        
-        subscription.setStartDate(subscriptionDTO.getStartDate()!= null ? subscriptionDTO.getStartDate() : LocalDate.now());
+
+        subscription.setStartDate(
+                subscriptionDTO.getStartDate() != null ? subscriptionDTO.getStartDate() : LocalDate.now());
 
         checkForOverlappingSubscriptions(subscription);
 
-        if(subscription.getPlan() != null) {
-             endDate = calculateEndDate(subscription.getStartDate(), subscription.getPlan());
+        if (subscription.getPlan() != null) {
+            endDate = calculateEndDate(subscription.getStartDate(), subscription.getPlan());
         }
 
         LocalDate dueDate = calculateDueDate(endDate);
         LocalDate graceEndDate = calculateGraceEndDate(endDate);
-        subscription = subscription.toBuilder().endDate(endDate).dueDate(dueDate).graceEndDate(graceEndDate).status(SubscriptionStatus.ACTIVE).build();
+        subscription = subscription.toBuilder().endDate(endDate).dueDate(dueDate).graceEndDate(graceEndDate)
+                .status(SubscriptionStatus.ACTIVE).build();
 
         Subscription savedSubscription = subscriptionRepository.save(subscription);
         createSubscriptionCharges(savedSubscription, subscriptionDTO.getDiscountAmount());
 
         // here i think we should consider about getting the payment too
-        
-        // memberAccessService.updateMemberAccess(subscription.getMember().getId(), graceEndDate, AccessStatus.ALLOWED, "Subscription created, new joinee");
 
-        if(subscription.getMember()!=null){
-            memberAccessService.updateMemberAccess(savedSubscription.getMember().getId(), graceEndDate, AccessStatus.ALLOWED, "New subscription created!");
-        }else if (subscription.getFamily()!=null){
-        // Family subscription - grant access to all family members
-        // TODO: Need to implement family member access handling
-        // For now, you might skip this or implement basic logic                                        
+        // memberAccessService.updateMemberAccess(subscription.getMember().getId(),
+        // graceEndDate, AccessStatus.ALLOWED, "Subscription created, new joinee");
+
+        if (subscription.getMember() != null) {
+            memberAccessService.updateMemberAccess(savedSubscription.getMember().getId(), graceEndDate,
+                    AccessStatus.ALLOWED, "New subscription created!");
+        } else if (subscription.getFamily() != null) {
+            // Family subscription - grant access to all family members
+            // TODO: Need to implement family member access handling
+            // For now, you might skip this or implement basic logic
+
+            Family family = subscription.getFamily();
+
+            for (Member member : family.getMembers()) {
+                memberAccessService.updateMemberAccess(member.getId(), graceEndDate, AccessStatus.ALLOWED,
+                        "Family Subscription " + family.getFamilyName());
+
+                log.info("Granted access to family member {} in family {}", member.getFirstName(),
+                        family.getFamilyName());
+            }
+
         }
-       
 
     }
 
@@ -113,12 +129,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void checkForOverlappingSubscriptions(Subscription subscription) {
 
-        if(subscription.getMember() != null) {
-            if(subscriptionRepository.existsByMemberIdAndStatus(subscription.getMember().getId(), SubscriptionStatus.ACTIVE)) {
+        if (subscription.getMember() != null) {
+            if (subscriptionRepository.existsByMemberIdAndStatus(subscription.getMember().getId(),
+                    SubscriptionStatus.ACTIVE)) {
                 throw new IllegalStateException("Member already has an active subscription");
             }
-        } else if(subscription.getFamily() != null) {
-            if(subscriptionRepository.existsByFamilyIdAndStatus(subscription.getFamily().getId(), SubscriptionStatus.ACTIVE)) {
+        } else if (subscription.getFamily() != null) {
+            if (subscriptionRepository.existsByFamilyIdAndStatus(subscription.getFamily().getId(),
+                    SubscriptionStatus.ACTIVE)) {
                 throw new IllegalStateException("Family already has an active subscription");
             }
         } else {
@@ -130,16 +148,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private void createSubscriptionCharges(Subscription subscription, BigDecimal discountAmount) {
 
         SubscriptionCharges subscriptionCharges = new SubscriptionCharges();
-        
+
         subscriptionCharges.setSubscription(subscription);
 
-        if(subscription.getPlan()!=null){
+        if (subscription.getPlan() != null) {
             subscriptionCharges.setTotalAmount(subscription.getPlan().getPrice());
         }
 
-        if(discountAmount!=null){
+        if (discountAmount != null) {
             subscriptionCharges.setDiscountAmount(discountAmount);
-        }else{
+        } else {
             subscriptionCharges.setDiscountAmount(BigDecimal.ZERO);
         }
 
@@ -150,10 +168,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscriptionChargesRepository.save(subscriptionCharges);
     }
 
-
-    // here grace extension by corch 
+    // here grace extension by corch
     // manual overwritten of member access by admin
-
-   
 
 }

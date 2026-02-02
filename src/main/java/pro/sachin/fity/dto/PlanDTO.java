@@ -11,7 +11,7 @@ public class PlanDTO {
     private Integer durationDays;
     private BigDecimal price;
     private PlanType planType;
-    private Integer ageMin;
-    private Integer ageMax;
-    private Integer maximumFamilyMembers;
+    private int ageMin;
+    private int ageMax;
+    private int maximumFamilyMembers;
 }

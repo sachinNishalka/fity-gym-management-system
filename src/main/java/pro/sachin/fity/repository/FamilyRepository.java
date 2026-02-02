@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import pro.sachin.fity.model.Family;
 
 @Repository
-public interface FamilyRepository extends JpaRepository<Family,Integer> {
+public interface FamilyRepository extends JpaRepository<Family, Long> {
 }
