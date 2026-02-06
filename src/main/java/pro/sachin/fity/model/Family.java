@@ -2,6 +2,8 @@ package pro.sachin.fity.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +14,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = "members")
 public class Family {
 
     @Id

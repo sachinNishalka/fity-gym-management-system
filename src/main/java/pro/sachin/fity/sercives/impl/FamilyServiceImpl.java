@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import pro.sachin.fity.dto.FamilyDTO;
+import pro.sachin.fity.dto.FamilyResponseDTO;
+import pro.sachin.fity.dto.MemberSummeryDTO;
 import pro.sachin.fity.model.Family;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.repository.FamilyRepository;
@@ -42,10 +44,32 @@ public class FamilyServiceImpl implements FamilyService {
         return familyRepository.findById(savedFamily.getId()).orElse(savedFamily);
     }
 
+    @Transactional
     @Override
-    public Family getFamilyById(Long id) {
+    public FamilyResponseDTO getFamilyById(Long id) {
         Family family = familyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
                 "Requested family not found (get family by id method, family service implimentation)"));
-        return family;
+
+        FamilyResponseDTO familyResponseDTO = new FamilyResponseDTO();
+        familyResponseDTO.setId(family.getId());
+        familyResponseDTO.setFamilyName(family.getFamilyName());
+        familyResponseDTO.setCreatedAt(family.getCreatedAt());
+
+        // converting members to the summery dtos
+
+        List<MemberSummeryDTO> memberSummeries = family.getMembers().stream().map(member -> {
+            MemberSummeryDTO memberSummeryDTO = new MemberSummeryDTO();
+            memberSummeryDTO.setId(member.getId());
+            memberSummeryDTO.setFirstName(member.getFirstName());
+            memberSummeryDTO.setLastName(member.getLastName());
+            memberSummeryDTO.setPhoneNumber(member.getPhoneNumber());
+            memberSummeryDTO.setEmail(member.getEmail());
+            memberSummeryDTO.setStatus(member.getStatus());
+            memberSummeryDTO.setJoinedDate(member.getJoinedDate());
+            return memberSummeryDTO;
+        }).toList();
+
+        familyResponseDTO.setMembers(memberSummeries);
+        return familyResponseDTO;
     }
 }

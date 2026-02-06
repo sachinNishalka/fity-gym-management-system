@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pro.sachin.fity.dto.FamilyDTO;
+import pro.sachin.fity.dto.FamilyResponseDTO;
 import pro.sachin.fity.model.Family;
 import pro.sachin.fity.sercives.FamilyService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,9 +86,9 @@ public class FamilyController {
     // TODO: SECURITY - Add authentication and authorization
 
     @GetMapping("/{id}")
-    public ResponseEntity<Family> getFamilyById(@PathVariable Long id) {
-        Family family = familyService.getFamilyById(id);
-        return new ResponseEntity<Family>(family, HttpStatus.OK);
+    public ResponseEntity<FamilyResponseDTO> getFamilyById(@PathVariable Long id) {
+        FamilyResponseDTO family = familyService.getFamilyById(id);
+        return new ResponseEntity<FamilyResponseDTO>(family, HttpStatus.OK);
     }
 
     // @GetMapping("/{id}")

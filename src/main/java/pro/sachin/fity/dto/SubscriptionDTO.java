@@ -94,4 +94,10 @@ public class SubscriptionDTO {
     // - id, memberName, planName, endDate, status, balanceDue
 
     private BigDecimal discountAmount;
+
+    // added after finding the workflow issue in the registration process
+    private BigDecimal initialPaymentAmount;
+
+    // this is a receipt number for initial payment, this is not neccessary
+    private String initialReceiptNumber;
 }

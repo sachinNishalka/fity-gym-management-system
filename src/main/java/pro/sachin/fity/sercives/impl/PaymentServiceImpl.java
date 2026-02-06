@@ -61,7 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
         boolean isFullyPaid = checkIfSubscriptionIsFullyPaid(subscriptionId);
         if (isFullyPaid) {
             log.info("Subscription {} is fully paid", subscriptionId);
-            reActivateSubscriptionIfBlocked(subscriptionId);
+            activateSubscription(subscriptionId);
 
             Subscription subscription = subscriptionRepository.findById(subscriptionId).orElseThrow(
                     () -> new EntityNotFoundException("Subscription is not found to update access records!"));
@@ -108,7 +108,7 @@ public class PaymentServiceImpl implements PaymentService {
         return isFullyPaid;
     }
 
-    private void reActivateSubscriptionIfBlocked(Long subscriptionId) {
+    private void activateSubscription(Long subscriptionId) {
 
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new IllegalStateException("Subscription not found"));
@@ -117,6 +117,13 @@ public class PaymentServiceImpl implements PaymentService {
             subscription.setStatus(SubscriptionStatus.ACTIVE);
             subscriptionRepository.save(subscription);
             log.info("Subscription {} reactivated", subscriptionId);
+        }
+
+        // acitvate the sibscription after the first payment
+        if (subscription.getStatus() == SubscriptionStatus.PENDING) {
+            subscription.setStatus(SubscriptionStatus.ACTIVE);
+            subscriptionRepository.save(subscription);
+            log.info("Subscription {} activated from PENDING (first payment)", subscriptionId);
         }
     }
 
