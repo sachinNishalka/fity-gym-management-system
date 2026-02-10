@@ -31,7 +31,7 @@ public class SubscriptionDTO {
 
     // TODO: REQUEST - Required field for subscription
     // TODO: Add validation: @NotNull
-    private Integer planId;
+    private Long planId;
 
     // TODO: RESPONSE ONLY - For display purposes
     private String planName;

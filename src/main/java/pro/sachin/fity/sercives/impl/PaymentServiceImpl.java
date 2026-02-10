@@ -65,7 +65,9 @@ public class PaymentServiceImpl implements PaymentService {
 
             Subscription subscription = subscriptionRepository.findById(subscriptionId).orElseThrow(
                     () -> new EntityNotFoundException("Subscription is not found to update access records!"));
+
             if (subscription.getMember() != null) {
+
                 memberAccessService.updateMemberAccess(subscription.getMember().getId(), subscription.getGraceEndDate(),
                         AccessStatus.ALLOWED, "Payment made and subcription restored!");
             } else if (subscription.getFamily() != null) {

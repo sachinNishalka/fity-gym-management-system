@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import pro.sachin.fity.model.Plan;
 
 @Repository
-public interface PlanRepository extends JpaRepository<Plan, Integer> {
+public interface PlanRepository extends JpaRepository<Plan, Long> {
 
 }

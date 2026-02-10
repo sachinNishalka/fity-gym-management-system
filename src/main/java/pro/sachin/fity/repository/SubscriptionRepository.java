@@ -15,7 +15,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     // this if for subscriptions that are passed end date and still active
     List<Subscription> findByEndDateBeforeAndStatus(LocalDate endDate, SubscriptionStatus status);
 
-    // this if for subscriptions that are passed grace end date and still in grace period
+    // this if for subscriptions that are passed grace end date and still in grace
+    // period
     List<Subscription> findByGraceEndDateBeforeAndStatus(LocalDate graceEndDate, SubscriptionStatus status);
 
     // check that member has an active subscription
@@ -30,4 +31,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     // check that family has an active subscription for a given plan
     Optional<Subscription> findByFamilyIdAndPlanIdAndStatus(Long familyId, Long planId, SubscriptionStatus status);
+
+    // this is for finding subscriptions fully paid before the end date
+
+    List<Subscription> findByStatusAndStartDateBefore(SubscriptionStatus status, LocalDate startDate);
 }
