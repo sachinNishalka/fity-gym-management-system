@@ -2,9 +2,16 @@ package pro.sachin.fity.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +23,7 @@ import pro.sachin.fity.sercives.PlanService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/v1/plan")
+@CrossOrigin
 public class PlanController {
 
     private final PlanService planService;
@@ -67,4 +75,32 @@ public class PlanController {
     // TODO: VALIDATION - For KIDS: ageMin < ageMax and both are set
     // TODO: VALIDATION - For FAMILY: maxFamilyMembers >= 2
     // TODO: SECURITY - Only ADMIN should be able to create/update/delete plans
+
+    // returning all existing plans
+    @GetMapping("/all")
+    ResponseEntity<List<Plan>> getAllPlans(){
+        List<Plan> plans = planService.getAllPlans();
+        return new ResponseEntity<List<Plan>>(plans, HttpStatus.OK);
+        
+    }
+
+    // get plan details by if
+    @GetMapping("/{id}")
+    ResponseEntity<Plan> getPlanById(@PathVariable Long id){
+        Plan plan = planService.getPlanById(id);
+        return new ResponseEntity<Plan>(plan, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    ResponseEntity<Plan> updatePlan(@PathVariable Long id, @RequestBody PlanDTO planDTO){
+        Plan updatedPlan = planService.updatePlan(id, planDTO);
+        return new ResponseEntity<Plan>(updatedPlan, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    ResponseEntity<Void> deletePlan(@PathVariable Long id){
+        planService.deletePlan(id);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
 }

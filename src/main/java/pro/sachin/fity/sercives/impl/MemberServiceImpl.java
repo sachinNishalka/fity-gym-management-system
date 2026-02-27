@@ -1,6 +1,9 @@
 package pro.sachin.fity.sercives.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +17,9 @@ import pro.sachin.fity.sercives.MemberService;
 @Service
 public class MemberServiceImpl implements MemberService {
 
-//     register a member
+    // register a member
     private final MemberRepository memberRepository;
+
     @Override
     public void registerMember(MemberDTO memberDTO) {
         Member member = new Member();
@@ -27,4 +31,13 @@ public class MemberServiceImpl implements MemberService {
         member.setStatus(MemberStatus.ACTIVE);
         memberRepository.save(member);
     }
+
+    @Override
+    public List<Member> getAllMembers() {
+
+        List<Member> members = memberRepository.findAll();
+        return members;
+
+    }
+
 }
