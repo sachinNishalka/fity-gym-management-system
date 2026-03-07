@@ -1,6 +1,7 @@
 package pro.sachin.fity.sercives;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import pro.sachin.fity.dto.RenewalRequestDTO;
 import pro.sachin.fity.dto.SubscriptionDTO;
@@ -113,4 +114,8 @@ public interface SubscriptionService {
     // TODO: Helper method for date calculations
 
     Subscription createRenewalSubscription(RenewalRequestDTO renewalRequestDTO);
+
+    List<Subscription> getPendingSubscriptions();
+
+    List<Subscription> getAllSubscriptions();
 }

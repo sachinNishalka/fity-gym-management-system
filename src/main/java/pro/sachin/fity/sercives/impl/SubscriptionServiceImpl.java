@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -274,6 +275,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         return savedRenewalSubscription;
 
+    }
+
+    @Override
+    public List<Subscription> getPendingSubscriptions() {
+        List<Subscription> pendingSubscriptions = subscriptionRepository.findByStatus(SubscriptionStatus.PENDING);
+        return pendingSubscriptions;
+    }
+
+    @Override
+    public List<Subscription> getAllSubscriptions() {
+        List<Subscription> allSubscriptions = subscriptionRepository.findAll();
+        return allSubscriptions;
     }
 
     // here grace extension by corch

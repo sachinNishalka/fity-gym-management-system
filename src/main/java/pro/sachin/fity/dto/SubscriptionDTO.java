@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class SubscriptionDTO {
 
     // TODO: RESPONSE ONLY - Don't include in request DTO
-    private int id;
+    private Long id;
 
     // TODO: REQUEST - Only provide ONE of memberId or familyId, never both
     // TODO: Add validation: @NotNull when creating subscription

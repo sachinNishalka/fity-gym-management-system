@@ -35,4 +35,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     // this is for finding subscriptions fully paid before the end date
 
     List<Subscription> findByStatusAndStartDateBefore(SubscriptionStatus status, LocalDate startDate);
+
+    List<Subscription> findByStatus(SubscriptionStatus status);
 }

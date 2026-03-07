@@ -2,11 +2,14 @@ package pro.sachin.fity.model;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
+
 public class Plan {
 
     @Id
