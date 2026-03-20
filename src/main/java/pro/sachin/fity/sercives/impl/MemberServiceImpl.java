@@ -19,6 +19,7 @@ public class MemberServiceImpl implements MemberService {
 
     // register a member
     private final MemberRepository memberRepository;
+    private final DeviceCommandService deviceCommandService; 
 
     @Override
     public void registerMember(MemberDTO memberDTO) {
@@ -30,6 +31,8 @@ public class MemberServiceImpl implements MemberService {
         member.setEmail(memberDTO.getEmail());
         member.setStatus(MemberStatus.ACTIVE);
         memberRepository.save(member);
+
+        deviceCommandService.queueMemberRegistration(member);
     }
 
     @Override
