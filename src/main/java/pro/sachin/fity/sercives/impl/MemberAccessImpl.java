@@ -19,6 +19,7 @@ public class MemberAccessImpl implements MemberAccessService {
 
     private final MemberAccessRepository memberAccessRepository;
     private final MemberRepository memberRepository;
+    private final DeviceCommandService deviceCommandService; 
 
     @Override
     public void updateMemberAccess(Long memberId, LocalDate allowedUntil, AccessStatus accessStatus, String reason) {
@@ -63,6 +64,7 @@ public class MemberAccessImpl implements MemberAccessService {
         memberAccess.setAccessStatus(accessStatus);
         memberAccessRepository.save(memberAccess);
 
+        deviceCommandService.queueAccessUpdate(memberId, accessStatus);
     }
 
 }
