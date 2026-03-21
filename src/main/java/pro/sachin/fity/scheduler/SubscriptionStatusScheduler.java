@@ -58,6 +58,8 @@ public class SubscriptionStatusScheduler {
 
         activatePaidRenewals();
 
+        moveToDueStatus(today);
+
     }
 
     public void moveToGracePeriod(LocalDate today) {
@@ -69,6 +71,17 @@ public class SubscriptionStatusScheduler {
         }
         subscriptionRepository.saveAll(subscriptions);
         log.info("Moved to grace period {} ", subscriptions.size());
+    }
+
+    public void moveToDueStatus(LocalDate today) {
+        List<Subscription> subscriptions = subscriptionRepository.findByDueDateBeforeAndStatus(today,
+                SubscriptionStatus.ACTIVE);
+
+        if (!subscriptions.isEmpty()) {
+            subscriptions.forEach(subscription -> subscription.setStatus(SubscriptionStatus.DUE));
+        }
+        subscriptionRepository.saveAll(subscriptions);
+        log.info("Moved to due status {} ", subscriptions.size());
     }
 
     public void blockExpiredSubscriptions(LocalDate today) {
