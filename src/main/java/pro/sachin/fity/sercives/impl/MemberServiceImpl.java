@@ -11,6 +11,7 @@ import pro.sachin.fity.dto.MemberDTO;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.model.MemberStatus;
 import pro.sachin.fity.repository.MemberRepository;
+import pro.sachin.fity.sercives.DeviceCommandService;
 import pro.sachin.fity.sercives.MemberService;
 
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class MemberServiceImpl implements MemberService {
 
     // register a member
     private final MemberRepository memberRepository;
-    private final DeviceCommandService deviceCommandService; 
+    private final DeviceCommandService deviceCommandService;
 
     @Override
     public void registerMember(MemberDTO memberDTO) {

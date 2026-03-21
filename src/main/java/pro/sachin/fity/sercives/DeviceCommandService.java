@@ -1,5 +1,11 @@
 package pro.sachin.fity.sercives;
 
+import java.util.List;
+
+import pro.sachin.fity.model.AccessStatus;
+import pro.sachin.fity.model.DeviceCommand;
+import pro.sachin.fity.model.Member;
+
 public interface DeviceCommandService {
 
     void queueMemberRegistration(Member member);
