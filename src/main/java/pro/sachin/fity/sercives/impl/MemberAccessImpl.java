@@ -64,7 +64,7 @@ public class MemberAccessImpl implements MemberAccessService {
         memberAccess.setAccessStatus(accessStatus);
         memberAccessRepository.save(memberAccess);
 
-        deviceCommandService.queueAccessUpdate(memberId, accessStatus);
+                deviceCommandService.queueAccessUpdate(memberId, accessStatus, allowedUntil);
     }
 
 }

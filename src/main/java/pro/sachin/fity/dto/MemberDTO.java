@@ -11,4 +11,5 @@ public class MemberDTO {
     private LocalDate dateOfBirth;
     private String phoneNumber;
     private String email;
+    private String gender;  // add this
 }

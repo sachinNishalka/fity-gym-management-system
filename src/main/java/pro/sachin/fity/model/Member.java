@@ -66,4 +66,7 @@ public class Member {
     // TODO: FUTURE - Consider adding helper method to calculate age from DOB
     // TODO: FUTURE - Consider adding helper method to check if eligible for
     // specific plan type
+
+    @Column(name = "gender")
+    private String gender;  // "male" or "female" or "other"
 }

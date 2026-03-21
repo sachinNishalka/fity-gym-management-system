@@ -30,6 +30,7 @@ public class MemberServiceImpl implements MemberService {
         member.setPhoneNumber(memberDTO.getPhoneNumber());
         member.setEmail(memberDTO.getEmail());
         member.setStatus(MemberStatus.ACTIVE);
+        member.setGender(memberDTO.getGender());
         memberRepository.save(member);
 
         deviceCommandService.queueMemberRegistration(member);
