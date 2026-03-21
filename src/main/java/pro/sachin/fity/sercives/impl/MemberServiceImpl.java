@@ -20,7 +20,7 @@ public class MemberServiceImpl implements MemberService {
 
     // register a member
     private final MemberRepository memberRepository;
-    private final DeviceCommandService deviceCommandService;
+    private final DeviceCommandService deviceCommandService; 
 
     @Override
     public void registerMember(MemberDTO memberDTO) {
