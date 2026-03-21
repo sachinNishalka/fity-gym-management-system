@@ -1,5 +1,5 @@
 package pro.sachin.fity.sercives;
 
 public interface AttendanceService {
-    CheckinResponseDTO recordCheckin(Long memberId);
+    // CheckinResponseDTO recordCheckin(Long memberId);
 }

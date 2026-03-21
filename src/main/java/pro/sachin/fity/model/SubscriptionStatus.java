@@ -4,5 +4,6 @@ public enum SubscriptionStatus {
     ACTIVE,
     BLOCKED,
     IN_GRACE,
-    PENDING
+    PENDING,
+    DUE
 }
