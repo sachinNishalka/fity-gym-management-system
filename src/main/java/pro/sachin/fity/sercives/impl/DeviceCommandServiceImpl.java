@@ -1,7 +1,9 @@
 package pro.sachin.fity.sercives.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,18 +31,41 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
     private final DeviceCommandRepository deviceCommandRepository;
     private final ObjectMapper objectMapper;
 
+    private static final String BEGIN_TIME = "2024-01-01T00:00:00";
+    private static final String BLOCKED_END_TIME = "2020-01-01T00:00:00";
+
     @Override
     public void queueMemberRegistration(Member member) {
-        Map<String, Object> payloadMap = new HashMap<>();
-        payloadMap.put("memberId", member.getId());
-        payloadMap.put("firstName", member.getFirstName());
-        payloadMap.put("lastName", member.getLastName());
-        payloadMap.put("access", false);
+
+        Map<String, Object> valid = new LinkedHashMap<>();
+        valid.put("enable", true);
+        valid.put("beginTime", BEGIN_TIME);
+        valid.put("endTime", BLOCKED_END_TIME);
+        valid.put("timeType", "local");
+
+        Map<String, Object> rightPlanEntry = new LinkedHashMap<>();
+        rightPlanEntry.put("doorNo", 1);
+        rightPlanEntry.put("planTemplateNo", "1");
+
+        Map<String, Object> userInfo = new LinkedHashMap<>();
+        userInfo.put("employeeNo", String.valueOf(member.getId()));
+        userInfo.put("name", member.getFirstName() + " " + member.getLastName());
+        userInfo.put("userType", "normal");
+        userInfo.put("Valid", valid);
+        userInfo.put("doorRight", "1");
+        userInfo.put("RightPlan", List.of(rightPlanEntry));
+        userInfo.put("gender", member.getGender() != null ? member.getGender() : "male");
+        userInfo.put("localUIRight", false);
+        userInfo.put("maxOpenDoorTime", 0);
+        userInfo.put("openDoorTime", 0);
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("UserInfo", userInfo);
 
         DeviceCommand command = new DeviceCommand();
         command.setCommandType(CommandType.REGISTER_MEMBER);
         command.setMemberId(member.getId());
-        command.setPayload(toJson(payloadMap));
+        command.setPayload(toJson(payload));
         command.setStatus(CommandStatus.PENDING);
 
         deviceCommandRepository.save(command);
@@ -48,21 +73,35 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
     }
 
     @Override
-    public void queueAccessUpdate(Long memberId, AccessStatus accessStatus) {
-        boolean access = accessStatus == AccessStatus.ALLOWED;
+    public void queueAccessUpdate(Long memberId, AccessStatus accessStatus, LocalDate allowedUntil) {
+        String endTime;
+        if (accessStatus == AccessStatus.ALLOWED && allowedUntil != null) {
+            endTime = allowedUntil.atTime(23, 59, 59).toString();
+        } else {
+            endTime = BLOCKED_END_TIME;
+        }
 
-        Map<String, Object> payloadMap = new HashMap<>();
-        payloadMap.put("memberId", memberId);
-        payloadMap.put("access", access);
+        Map<String, Object> valid = new LinkedHashMap<>();
+        valid.put("enable", true);
+        valid.put("beginTime", BEGIN_TIME);
+        valid.put("endTime", endTime);
+        valid.put("timeType", "local");
+
+        Map<String, Object> userInfo = new LinkedHashMap<>();
+        userInfo.put("employeeNo", String.valueOf(memberId));
+        userInfo.put("Valid", valid);
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("UserInfo", userInfo);
 
         DeviceCommand command = new DeviceCommand();
         command.setCommandType(CommandType.UPDATE_ACCESS);
         command.setMemberId(memberId);
-        command.setPayload(toJson(payloadMap));
+        command.setPayload(toJson(payload));
         command.setStatus(CommandStatus.PENDING);
 
         deviceCommandRepository.save(command);
-        log.info("Queued UPDATE_ACCESS command for member {} -> access: {}", memberId, access);
+        log.info("Queued UPDATE_ACCESS command for member {} -> endTime: {}", memberId, endTime);
     }
 
     @Override
