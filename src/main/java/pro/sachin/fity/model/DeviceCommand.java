@@ -43,4 +43,7 @@ public class DeviceCommand {
 
     @Column(name = "processed_at")
     private LocalDateTime processedAt;
+
+    @Column(name = "member_code")
+    private String memberCode; // this is the code that will be used to identify the member
 }

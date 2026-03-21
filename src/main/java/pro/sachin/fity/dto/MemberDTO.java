@@ -12,4 +12,5 @@ public class MemberDTO {
     private String phoneNumber;
     private String email;
     private String gender;  // add this
+    private String memberCode;
 }

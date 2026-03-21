@@ -48,7 +48,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         rightPlanEntry.put("planTemplateNo", "1");
 
         Map<String, Object> userInfo = new LinkedHashMap<>();
-        userInfo.put("employeeNo", String.valueOf(member.getId()));
+        userInfo.put("employeeNo", member.getMemberCode());
         userInfo.put("name", member.getFirstName() + " " + member.getLastName());
         userInfo.put("userType", "normal");
         userInfo.put("Valid", valid);
@@ -65,6 +65,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         DeviceCommand command = new DeviceCommand();
         command.setCommandType(CommandType.REGISTER_MEMBER);
         command.setMemberId(member.getId());
+        command.setMemberCode(member.getMemberCode());
         command.setPayload(toJson(payload));
         command.setStatus(CommandStatus.PENDING);
 
@@ -73,7 +74,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
     }
 
     @Override
-    public void queueAccessUpdate(Long memberId, AccessStatus accessStatus, LocalDate allowedUntil) {
+    public void queueAccessUpdate(Long memberId, String memberCode, AccessStatus accessStatus, LocalDate allowedUntil) {
         String endTime;
         if (accessStatus == AccessStatus.ALLOWED && allowedUntil != null) {
             endTime = allowedUntil.atTime(23, 59, 59).toString();
@@ -88,7 +89,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         valid.put("timeType", "local");
 
         Map<String, Object> userInfo = new LinkedHashMap<>();
-        userInfo.put("employeeNo", String.valueOf(memberId));
+        userInfo.put("employeeNo", memberCode);
         userInfo.put("Valid", valid);
 
         Map<String, Object> payload = new LinkedHashMap<>();
@@ -97,6 +98,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         DeviceCommand command = new DeviceCommand();
         command.setCommandType(CommandType.UPDATE_ACCESS);
         command.setMemberId(memberId);
+        command.setMemberCode(memberCode);
         command.setPayload(toJson(payload));
         command.setStatus(CommandStatus.PENDING);
 

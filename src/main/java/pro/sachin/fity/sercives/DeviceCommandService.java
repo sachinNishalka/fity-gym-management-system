@@ -11,7 +11,7 @@ public interface DeviceCommandService {
 
     void queueMemberRegistration(Member member);
 
-    void queueAccessUpdate(Long memberId, AccessStatus accessStatus, LocalDate allowedUntil);
+    void queueAccessUpdate(Long memberId, String memberCode, AccessStatus accessStatus, LocalDate allowedUntil);
 
     List<DeviceCommand> getPendingCommands();
 

@@ -69,4 +69,7 @@ public class Member {
 
     @Column(name = "gender")
     private String gender;  // "male" or "female" or "other"
+
+    @Column(unique = true, name = "member_code")
+    private String memberCode; // this is the code that will be used to identify the member
 }
