@@ -37,4 +37,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     List<Subscription> findByStatusAndStartDateBefore(SubscriptionStatus status, LocalDate startDate);
 
     List<Subscription> findByStatus(SubscriptionStatus status);
+
+    // this is for subscrtiptions that are passed due date and still active
+    List<Subscription> findByDueDateBeforeAndStatus(LocalDate dueDate, SubscriptionStatus status);
 }
