@@ -12,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 
 @Entity
 @Data
@@ -68,8 +69,51 @@ public class Member {
     // specific plan type
 
     @Column(name = "gender")
-    private String gender;  // "male" or "female" or "other"
+    private String gender; // "male" or "female" or "other"
 
     @Column(unique = true, name = "member_code")
     private String memberCode; // this is the code that will be used to identify the member
+
+    @Column(name = "address")
+    private String address;
+
+    private float height;
+
+    private float weight;
+
+    private String idNumber;
+
+    private String emergencyNumber;
+
+    private String facebookName;
+
+    private Boolean bodyBuilding;
+
+    private Boolean fatBurning;
+
+    private Boolean physicalFitness;
+
+    private Boolean sportsSkills;
+
+    private Boolean bodyShape;
+
+    private String otherService;
+
+    private Boolean cholesterol;
+
+    private Boolean bloodPressure;
+
+    private Boolean diabetes;
+
+    private Boolean heartProblem;
+
+    private Boolean surgery;
+
+    private Boolean fractures;
+
+    private Boolean kidneyLiver;
+
+    private Boolean otherDisease;
+
+    private Boolean currentTreatment;
 }
