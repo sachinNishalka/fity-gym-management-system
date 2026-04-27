@@ -17,6 +17,7 @@ import pro.sachin.fity.dto.MemberDTO;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.sercives.MemberService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
@@ -82,6 +83,12 @@ public class MemberController {
     public ResponseEntity<List<Member>> getAllMembers() {
         List<Member> allMembers = memberService.getAllMembers();
         return new ResponseEntity<List<Member>>(allMembers, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Member> getMemberById(@PathVariable Long id) {
+        Member member = memberService.getMemberById(id);
+        return new ResponseEntity<Member>(member, HttpStatus.OK);
     }
 
 }

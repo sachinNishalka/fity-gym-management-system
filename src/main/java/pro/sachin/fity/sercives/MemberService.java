@@ -68,4 +68,6 @@ public interface MemberService {
 
     // method to get all members
     List<Member> getAllMembers();
+
+    Member getMemberById(Long id);
 }
