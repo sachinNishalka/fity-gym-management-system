@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/home/fity-gym-management-system/src/main/resources/application.properties
+./src/main/resources/application.properties
