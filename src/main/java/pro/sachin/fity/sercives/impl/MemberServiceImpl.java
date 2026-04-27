@@ -111,4 +111,11 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
+    @Override
+    public Member getMemberById(Long id) {
+        
+        Member member = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found with id: " + id));
+        return member;
+    }
+
 }
