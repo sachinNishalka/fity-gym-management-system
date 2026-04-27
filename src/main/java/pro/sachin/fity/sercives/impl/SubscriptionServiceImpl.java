@@ -7,9 +7,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -638,6 +641,45 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         memberDetailsDTO.setSubscriptionCharges(subscriptionChargesDto);
 
         return memberDetailsDTO;
+    }
+
+    @Override
+    public List<SubscriptionDTO> getRenewalSubscriptionsList() {
+        List<SubscriptionDTO> renewalSubscriptionsList = new ArrayList<>();
+
+        // Now fetches everything in ONE query
+        List<Subscription> renewalSubscriptions = subscriptionRepository.findRenwalSubscriptionList();
+
+        for (Subscription renewSubscription : renewalSubscriptions) {
+            SubscriptionDTO subscriptionDTO = subscriptionMapper.toDto(renewSubscription);
+
+            // These won't trigger additional queries since we used JOIN FETCH
+            if (renewSubscription.getMember() != null) {
+                subscriptionDTO.setMemberId(renewSubscription.getMember().getId());
+                subscriptionDTO.setMemberName(
+                        renewSubscription.getMember().getFirstName() + " " +
+                                renewSubscription.getMember().getLastName());
+            }
+
+            if (renewSubscription.getFamily() != null) {
+                subscriptionDTO.setFamilyId(renewSubscription.getFamily().getId());
+                subscriptionDTO.setFamilyName(renewSubscription.getFamily().getFamilyName());
+            }
+
+            subscriptionDTO.setPlanId(renewSubscription.getPlan().getId());
+            subscriptionDTO.setPlanName(renewSubscription.getPlan().getName());
+
+            if (renewSubscription.getSubscriptionCharges() != null) {
+                subscriptionDTO.setDiscountAmount(
+                        renewSubscription.getSubscriptionCharges().getDiscountAmount());
+            }
+
+            subscriptionDTO.setMemberCode(renewSubscription.getMember().getMemberCode());
+
+            renewalSubscriptionsList.add(subscriptionDTO);
+        }
+
+        return renewalSubscriptionsList;
     }
 
     // here grace extension by corch

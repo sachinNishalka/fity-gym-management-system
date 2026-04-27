@@ -1,10 +1,13 @@
 package pro.sachin.fity.repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pro.sachin.fity.model.Subscription;
 import pro.sachin.fity.model.SubscriptionStatus;
@@ -68,5 +71,25 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
         Subscription findByMemberIdAndStatus(Long memberId, SubscriptionStatus active);
 
-       
+        Subscription findByFamilyId(Long familyId);
+
+        @Query("SELECT DISTINCT s FROM Subscription s " +
+                        "LEFT JOIN FETCH s.member m " +
+                        "LEFT JOIN FETCH m.memberAccess " + // Also fetch memberAccess if needed
+                        "LEFT JOIN FETCH s.family f " +
+                        "LEFT JOIN FETCH s.plan p " +
+                        "LEFT JOIN FETCH s.subscriptionCharges sc " +
+                        "WHERE s.status IN ('DUE', 'ACTIVE', 'IN_GRACE') " +
+                        "AND s.id IN (" +
+                        "  SELECT s2.id FROM Subscription s2 " +
+                        "  WHERE s2.status IN ('DUE', 'ACTIVE', 'IN_GRACE') " +
+                        "  AND s2.startDate = (" +
+                        "    SELECT MAX(s3.startDate) FROM Subscription s3 " +
+                        "    WHERE s3.status IN ('DUE', 'ACTIVE', 'IN_GRACE') " +
+                        "    AND ((s3.member IS NOT NULL AND s3.member = s2.member) " +
+                        "         OR (s3.family IS NOT NULL AND s3.family = s2.family))" +
+                        "  )" +
+                        ")")
+        List<Subscription> findRenwalSubscriptionList();
+
 }

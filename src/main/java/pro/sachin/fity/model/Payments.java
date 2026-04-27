@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,9 +17,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Id;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Payments {
 
     @Id
@@ -26,7 +30,7 @@ public class Payments {
     private Long id;
 
     // TODO: This relationship is correct - multiple payments per subscription
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "subscription_id", nullable = false)
     private Subscription subscription;
 

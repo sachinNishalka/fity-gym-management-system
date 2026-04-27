@@ -1,11 +1,16 @@
 package pro.sachin.fity.sercives.impl;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import pro.sachin.fity.dto.GymAccessDTO;
+import pro.sachin.fity.dto.MemberAccessDTO;
+import pro.sachin.fity.mapper.MemberAccessMapper;
 import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.model.MemberAccess;
@@ -21,6 +26,7 @@ public class MemberAccessImpl implements MemberAccessService {
   private final MemberAccessRepository memberAccessRepository;
   private final MemberRepository memberRepository;
   private final DeviceCommandService deviceCommandService;
+  private final MemberAccessMapper memberAccessMapper;
 
   @Override
   public void updateMemberAccess(Long memberId, LocalDate allowedUntil, AccessStatus accessStatus, String reason) {
@@ -66,6 +72,11 @@ public class MemberAccessImpl implements MemberAccessService {
     memberAccessRepository.save(memberAccess);
 
     deviceCommandService.queueAccessUpdate(memberId, member.getMemberCode(), accessStatus, allowedUntil);
+
   }
 
+  @Override
+  public List<MemberAccess> getAllMemberAccess() {
+    return memberAccessRepository.findAllWithSubscriptionAndMember();
+  }
 }

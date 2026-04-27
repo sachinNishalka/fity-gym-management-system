@@ -31,7 +31,7 @@ public class DeviceController {
     }
 
     @PostMapping("/commands/{id}/ack")
-    ResponseEntity<String> acknowledgeCommand(@PathVariable Long id, @RequestParam boolean success) {
+    ResponseEntity<String> acknowledgeCommand(@PathVariable("id") Long id, @RequestParam boolean success) {
         deviceCommandService.acknowledgeCommand(id, success);
         return new ResponseEntity<>("Command acknowledged", HttpStatus.OK);
     }

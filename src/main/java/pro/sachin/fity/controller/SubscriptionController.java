@@ -2,7 +2,7 @@ package pro.sachin.fity.controller;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +34,7 @@ import pro.sachin.fity.sercives.SubscriptionService;
 @RestController
 @RequestMapping("api/v1/subscription")
 @CrossOrigin
+@Slf4j
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
@@ -150,6 +151,7 @@ public class SubscriptionController {
             subscriptionDTO.setGraceEndDate(subscription.getGraceEndDate());
             subscriptionDTO.setStatus(subscription.getStatus().name());
             subscriptionDTO.setDiscountAmount(subscription.getSubscriptionCharges().getDiscountAmount());
+            subscriptionDTO.setMemberCode(subscription.getMember().getMemberCode());
             pendingSubscriptions.add(subscriptionDTO);
         }
 
@@ -186,7 +188,12 @@ public class SubscriptionController {
             subscriptionDTO.setDueDate(subscription.getDueDate());
             subscriptionDTO.setGraceEndDate(subscription.getGraceEndDate());
             subscriptionDTO.setStatus(subscription.getStatus().name());
-            subscriptionDTO.setDiscountAmount(subscription.getSubscriptionCharges().getDiscountAmount());
+            subscriptionDTO.setMemberCode(subscription.getMember().getMemberCode());
+            if (subscription.getSubscriptionCharges() != null) {
+                subscriptionDTO.setDiscountAmount(subscription.getSubscriptionCharges().getDiscountAmount());
+            } else {
+                log.error("Subscription charges not found for subscription: " + subscription.getId());
+            }
             allSubscriptions.add(subscriptionDTO);
         }
 
@@ -194,14 +201,20 @@ public class SubscriptionController {
     }
 
     @DeleteMapping("/delete/{subscriptionId}")
-    public ResponseEntity<Void> deleteSubscription(@PathVariable Long subscriptionId) {
+    public ResponseEntity<Void> deleteSubscription(@PathVariable("subscriptionId") Long subscriptionId) {
         subscriptionService.deleteSubscription(subscriptionId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<MemberDetailsDTO> getSubscriptionByMemberId(@PathVariable Long memberId) {
+    public ResponseEntity<MemberDetailsDTO> getSubscriptionByMemberId(@PathVariable("memberId") Long memberId) {
         MemberDetailsDTO memberDetailsDTO = subscriptionService.getSubscriptionByMemberId(memberId);
         return new ResponseEntity<MemberDetailsDTO>(memberDetailsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/renewal")
+    public ResponseEntity<List<SubscriptionDTO>> getRenewalSubscriptionList() {
+        List<SubscriptionDTO> renewalSubscriptionsList = subscriptionService.getRenewalSubscriptionsList();
+        return new ResponseEntity<List<SubscriptionDTO>>(renewalSubscriptionsList, HttpStatus.OK);
     }
 }

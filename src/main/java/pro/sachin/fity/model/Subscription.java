@@ -31,7 +31,7 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -39,7 +39,7 @@ public class Subscription {
     @JoinColumn(name = "family_id")
     private Family family;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", nullable = false)
     private Plan plan;
 
@@ -80,7 +80,7 @@ public class Subscription {
 
     // ============= VALIDATION LOGIC =============
 
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payments> payments;
 
     @PrePersist
