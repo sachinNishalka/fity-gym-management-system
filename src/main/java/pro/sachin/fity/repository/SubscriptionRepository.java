@@ -40,4 +40,27 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     // this is for subscrtiptions that are passed due date and still active
     List<Subscription> findByDueDateBeforeAndStatus(LocalDate dueDate, SubscriptionStatus status);
+
+    // Add these methods to SubscriptionRepository interface:
+
+    // 1. Find subscriptions by multiple statuses and start date (for scheduler)
+    List<Subscription> findByStatusInAndStartDateBefore(List<SubscriptionStatus> statuses, LocalDate startDate);
+
+    // 2. Find member subscription by multiple statuses (for ending old
+    // subscriptions)
+    Optional<Subscription> findByMemberIdAndStatusIn(Long memberId, List<SubscriptionStatus> statuses);
+
+    // 3. Find family subscription by multiple statuses (for ending old
+    // subscriptions)
+    Optional<Subscription> findByFamilyIdAndStatusIn(Long familyId, List<SubscriptionStatus> statuses);
+
+    // 4. Optional: Find top/first subscription by member and statuses ordered by
+    // creation date
+    Optional<Subscription> findFirstByMemberIdAndStatusInOrderByCreatedAtDesc(Long memberId,
+            List<SubscriptionStatus> statuses);
+
+    // 5. Optional: Find top/first subscription by family and statuses ordered by
+    // creation date
+    Optional<Subscription> findFirstByFamilyIdAndStatusInOrderByCreatedAtDesc(Long familyId,
+            List<SubscriptionStatus> statuses);
 }

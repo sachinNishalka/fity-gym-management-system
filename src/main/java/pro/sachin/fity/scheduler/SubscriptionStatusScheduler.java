@@ -2,7 +2,9 @@ package pro.sachin.fity.scheduler;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -36,6 +38,7 @@ public class SubscriptionStatusScheduler {
     private final PyamentRepository pyamentRepository;
 
     private final SubscriptionRepository subscriptionRepository;
+
     private final MemberAccessService memberAccessService;
 
     // SubscriptionStatusScheduler(PyamentRepository pyamentRepository,
@@ -120,13 +123,16 @@ public class SubscriptionStatusScheduler {
         LocalDate today = LocalDate.now();
 
         List<Subscription> pendingRenewals = subscriptionRepository
-                .findByStatusAndStartDateBefore(SubscriptionStatus.PENDING, today.plusDays(1));
+                .findByStatusAndStartDateBefore(SubscriptionStatus.PENDING_RENEWAL, today.plusDays(1));
 
         for (Subscription renewal : pendingRenewals) {
             if (isSubscriptionFullyPaid(renewal.getId())) {
 
                 // setting the subscription status to active
                 renewal.setStatus(SubscriptionStatus.ACTIVE);
+
+                // NEW: End the old subscription when renewal is activated
+                endOldSubscriptionOnRenewal(renewal);
 
                 // granting the access to the members
                 if (renewal.getMember() != null) {
@@ -169,6 +175,34 @@ public class SubscriptionStatusScheduler {
                 .orElseThrow(() -> new EntityNotFoundException("Charges not found"));
 
         return totalPaid.compareTo(charges.getNetAmount()) >= 0;
+    }
+
+    // Add this method to SubscriptionServiceImpl class
+    private void endOldSubscriptionOnRenewal(Subscription renewalSubscription) {
+        if (renewalSubscription.getMember() != null) {
+            // Find the old active subscription for this member
+            Optional<Subscription> oldSubscription = subscriptionRepository
+                .findByMemberIdAndStatusIn(renewalSubscription.getMember().getId(), 
+                    Arrays.asList(SubscriptionStatus.ACTIVE, SubscriptionStatus.DUE, SubscriptionStatus.IN_GRACE));
+            
+            if (oldSubscription.isPresent() && !oldSubscription.get().getId().equals(renewalSubscription.getId())) {
+                oldSubscription.get().setStatus(SubscriptionStatus.ENDED);
+                subscriptionRepository.save(oldSubscription.get());
+                log.info("Ended old subscription {} for member {}", oldSubscription.get().getId(), renewalSubscription.getMember().getId());
+            }
+            
+        } else if (renewalSubscription.getFamily() != null) {
+            // Find the old active subscription for this family
+            Optional<Subscription> oldSubscription = subscriptionRepository
+                .findByFamilyIdAndStatusIn(renewalSubscription.getFamily().getId(), 
+                    Arrays.asList(SubscriptionStatus.ACTIVE, SubscriptionStatus.DUE, SubscriptionStatus.IN_GRACE));
+            
+            if (oldSubscription.isPresent() && !oldSubscription.get().getId().equals(renewalSubscription.getId())) {
+                oldSubscription.get().setStatus(SubscriptionStatus.ENDED);
+                subscriptionRepository.save(oldSubscription.get());
+                log.info("Ended old subscription {} for family {}", oldSubscription.get().getId(), renewalSubscription.getFamily().getId());
+            }
+        }
     }
 
 }
