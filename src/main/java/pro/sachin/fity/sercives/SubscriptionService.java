@@ -118,4 +118,7 @@ public interface SubscriptionService {
     List<Subscription> getPendingSubscriptions();
 
     List<Subscription> getAllSubscriptions();
+
+    void deleteSubscription(Long subscriptionId);
+
 }

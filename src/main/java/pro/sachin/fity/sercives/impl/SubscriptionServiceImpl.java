@@ -289,6 +289,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return allSubscriptions;
     }
 
+    @Override
+    public void deleteSubscription(Long subscriptionId) {
+        if (subscriptionId == null) {
+            throw new IllegalArgumentException("Subscription id cannot be null");
+        }
+        Subscription subscription = subscriptionRepository.findById(subscriptionId)
+                .orElseThrow(() -> new EntityNotFoundException("Subscription not found with id: " + subscriptionId));
+
+        if (subscription == null) {
+            throw new IllegalStateException("Subscription is not found with the given id");
+        }
+
+        subscriptionRepository.delete(subscription);
+    }
+
     // here grace extension by corch
     // manual overwritten of member access by admin
 
