@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -78,6 +79,9 @@ public class Subscription {
     // TODO: MISSING - Add @OneToMany relationship to GraceExtensions
 
     // ============= VALIDATION LOGIC =============
+
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Payments> payments;
 
     @PrePersist
     @PreUpdate

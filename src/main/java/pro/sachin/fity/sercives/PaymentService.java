@@ -1,7 +1,11 @@
 package pro.sachin.fity.sercives;
 
+import java.util.List;
+
+import pro.sachin.fity.dto.PartiallyPaidSubscriptionDTO;
 import pro.sachin.fity.dto.PaymentDTO;
 import pro.sachin.fity.model.Payments;
+import pro.sachin.fity.model.Subscription;
 
 public interface PaymentService {
     // TODO: CRITICAL - This method is missing post-payment business logic
@@ -14,6 +18,9 @@ public interface PaymentService {
     // TODO: Use @Transactional to ensure atomic updates
     void savePayment(PaymentDTO paymentDTO);
 
+    List<PartiallyPaidSubscriptionDTO> getPartiallyPaidSubscriptions();
+
+    List<Subscription> paymentsForToday();
     // TODO: IMPLEMENT - Record payment with auto-generated receipt
     // TODO: PaymentResponseDTO recordPayment(PaymentRecordRequest request);
     // TODO: Request fields: subscriptionId, amount, receivedByUserId, note
