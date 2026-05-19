@@ -163,6 +163,14 @@ public class PaymentServiceImpl implements PaymentService {
                 dto.setPaid(paidAmount);
                 dto.setBalance(balanceAmount);
 
+                dto.setMemberFirstName(subscription.getMember().getFirstName());
+                dto.setMemberLastName(subscription.getMember().getLastName());
+                dto.setMemberId(subscription.getMember().getId());
+
+                dto.setPlanId(subscription.getPlan().getId());
+                dto.setPlanName(subscription.getPlan().getName());
+                dto.setPlanType(subscription.getPlan().getPlanType().name());
+
                 // subcriptio id
                 partiallyPaidSubscriptions.add(dto);
             }
