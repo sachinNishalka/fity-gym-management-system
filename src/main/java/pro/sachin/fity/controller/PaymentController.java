@@ -1,8 +1,11 @@
 package pro.sachin.fity.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import pro.sachin.fity.dto.PartiallyPaidSubscriptionDTO;
 import pro.sachin.fity.dto.PaymentDTO;
 import pro.sachin.fity.model.Payments;
 import pro.sachin.fity.model.Subscription;
@@ -38,6 +42,18 @@ public class PaymentController {
         paymentService.savePayment(paymentDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(paymentDTO);
+    }
+
+    @GetMapping("/partially-paid-subscriptions")
+    public ResponseEntity<List<PartiallyPaidSubscriptionDTO>> getPartiallyPaidSubscriptions() {
+        List<PartiallyPaidSubscriptionDTO> subscriptions = paymentService.getPartiallyPaidSubscriptions();
+        return ResponseEntity.ok(subscriptions);
+    }
+
+    @GetMapping("/payments-for-today")
+    public ResponseEntity<List<Subscription>> paymentsForToday() {
+        List<Subscription> subscriptions = paymentService.paymentsForToday();
+        return ResponseEntity.ok(subscriptions);
     }
 
     // TODO: IMPLEMENT - Record payment with automatic receipt generation

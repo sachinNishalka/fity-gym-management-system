@@ -63,4 +63,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     // creation date
     Optional<Subscription> findFirstByFamilyIdAndStatusInOrderByCreatedAtDesc(Long familyId,
             List<SubscriptionStatus> statuses);
+  
+    List<Subscription> findByEndDate(LocalDate endDate);
 }

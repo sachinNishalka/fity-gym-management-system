@@ -1,6 +1,7 @@
 package pro.sachin.fity.sercives.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import pro.sachin.fity.dto.PartiallyPaidSubscriptionDTO;
 import pro.sachin.fity.dto.PaymentDTO;
 import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.Family;
@@ -127,6 +129,59 @@ public class PaymentServiceImpl implements PaymentService {
             subscriptionRepository.save(subscription);
             log.info("Subscription {} activated from PENDING (first payment)", subscriptionId);
         }
+    }
+
+    public List<PartiallyPaidSubscriptionDTO> getPartiallyPaidSubscriptions() {
+        List<PartiallyPaidSubscriptionDTO> partiallyPaidSubscriptions = new ArrayList<>();
+
+        List<Subscription> allSubscriptions = subscriptionRepository.findAll();
+
+        for (Subscription subscription : allSubscriptions) {
+            if (!checkIfSubscriptionIsFullyPaid(subscription.getId())) {
+
+                // it needs the total amount
+                BigDecimal totalAmount = subscriptionChargesRepository.findBySubscriptionId(subscription.getId())
+                        .orElseThrow(() -> new IllegalStateException(
+                                "Subscription charges record not found for subscription"))
+                        .getNetAmount();
+
+                // it needs paid amout
+                List<Payments> payments = paymentRepository.findBySubscriptionId(subscription.getId());
+
+                BigDecimal paidAmount = BigDecimal.ZERO;
+
+                for (Payments payment : payments) {
+                    paidAmount = paidAmount.add(payment.getAmount());
+                }
+
+                // it needs balance amount
+                BigDecimal balanceAmount = totalAmount.subtract(paidAmount);
+
+                PartiallyPaidSubscriptionDTO dto = new PartiallyPaidSubscriptionDTO();
+                dto.setSubscriptionId(subscription.getId());
+                dto.setTotalAmount(totalAmount);
+                dto.setPaid(paidAmount);
+                dto.setBalance(balanceAmount);
+
+                dto.setMemberFirstName(subscription.getMember().getFirstName());
+                dto.setMemberLastName(subscription.getMember().getLastName());
+                dto.setMemberId(subscription.getMember().getId());
+
+                dto.setPlanId(subscription.getPlan().getId());
+                dto.setPlanName(subscription.getPlan().getName());
+                dto.setPlanType(subscription.getPlan().getPlanType().name());
+
+                // subcriptio id
+                partiallyPaidSubscriptions.add(dto);
+            }
+        }
+
+        return partiallyPaidSubscriptions;
+    }
+
+    public List<Subscription> paymentsForToday() {
+        List<Subscription> subscriptions = subscriptionRepository.findByEndDate(java.time.LocalDate.now());
+        return subscriptions;
     }
 
 }
