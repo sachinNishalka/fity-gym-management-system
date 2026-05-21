@@ -20,9 +20,11 @@ import pro.sachin.fity.dto.MemberDTO;
 import pro.sachin.fity.dto.MemberDetailsDTO;
 import pro.sachin.fity.dto.PlanDTO;
 import pro.sachin.fity.dto.RenewalRequestDTO;
+import pro.sachin.fity.dto.SubscriptionChargesDTO;
 import pro.sachin.fity.dto.SubscriptionDTO;
 import pro.sachin.fity.mapper.MemberMapper;
 import pro.sachin.fity.mapper.PlanMapper;
+import pro.sachin.fity.mapper.SubscriptionChargesMapper;
 import pro.sachin.fity.mapper.SubscriptionMapper;
 import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.Family;
@@ -54,6 +56,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final MemberMapper memberMapper;
     private final PlanMapper planMapper;
     private final SubscriptionMapper subscriptionMapper;
+    private final SubscriptionChargesMapper subscriptionChargesMapper;
 
     @Transactional
     @Override
@@ -624,10 +627,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         SubscriptionDTO subscriptionDto = subscriptionMapper.toDto(subscription);
 
+        SubscriptionCharges subscriptionCharges = subscription.getSubscriptionCharges();
+
+        SubscriptionChargesDTO subscriptionChargesDto = subscriptionChargesMapper.toDto(subscriptionCharges);
+
         MemberDetailsDTO memberDetailsDTO = new MemberDetailsDTO();
         memberDetailsDTO.setMember(member);
         memberDetailsDTO.setPlan(plan);
         memberDetailsDTO.setSubscription(subscriptionDto);
+        memberDetailsDTO.setSubscriptionCharges(subscriptionChargesDto);
 
         return memberDetailsDTO;
     }

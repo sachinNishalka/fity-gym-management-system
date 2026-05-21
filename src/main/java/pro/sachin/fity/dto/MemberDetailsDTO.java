@@ -10,5 +10,6 @@ public class MemberDetailsDTO {
     public Member member;
     public Plan plan;
     public SubscriptionDTO subscription;
+    public SubscriptionChargesDTO subscriptionCharges;
 
 }

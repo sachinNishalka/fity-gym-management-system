@@ -70,4 +70,6 @@ public interface MemberService {
     List<Member> getAllMembers();
 
     Member getMemberById(Long id);
+
+    Member updateMember(Long memberId, MemberDTO memberDTO);
 }

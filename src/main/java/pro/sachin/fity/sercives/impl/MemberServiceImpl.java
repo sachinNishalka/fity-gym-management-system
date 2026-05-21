@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import pro.sachin.fity.dto.MemberDTO;
+import pro.sachin.fity.mapper.MemberMapper;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.model.MemberStatus;
 import pro.sachin.fity.repository.MemberRepository;
@@ -23,6 +24,7 @@ public class MemberServiceImpl implements MemberService {
     // register a member
     private final MemberRepository memberRepository;
     private final DeviceCommandService deviceCommandService;
+    private final MemberMapper memberMapper;
 
     @Override
     public void registerMember(MemberDTO memberDTO) {
@@ -113,9 +115,21 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member getMemberById(Long id) {
-        
-        Member member = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found with id: " + id));
+
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member not found with id: " + id));
         return member;
+    }
+
+    @Override
+    public Member updateMember(Long memberId, MemberDTO memberDTO) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found with id: " + memberId));
+
+        Member updatedMember = memberMapper.updateMemberFromDto(memberDTO, member);
+
+        return memberRepository.save(updatedMember);
     }
 
 }
