@@ -16,8 +16,14 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import pro.sachin.fity.dto.MemberDTO;
+import pro.sachin.fity.dto.MemberDetailsDTO;
+import pro.sachin.fity.dto.PlanDTO;
 import pro.sachin.fity.dto.RenewalRequestDTO;
 import pro.sachin.fity.dto.SubscriptionDTO;
+import pro.sachin.fity.mapper.MemberMapper;
+import pro.sachin.fity.mapper.PlanMapper;
+import pro.sachin.fity.mapper.SubscriptionMapper;
 import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.Family;
 import pro.sachin.fity.model.GraceExtension;
@@ -36,15 +42,18 @@ import pro.sachin.fity.sercives.SubscriptionService;
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-    private final PyamentRepository pyamentRepository;
-
     private final SubscriptionRepository subscriptionRepository;
+
     private final PlanRepository planRepository;
     private final SubscriptionChargesRepository subscriptionChargesRepository;
     private final MemberRepository memberRepository;
     private final FamilyRepository familyRepository;
     private final MemberAccessService memberAccessService;
     private final GraceExtensionRepository graceExtensionRepository;
+
+    private final MemberMapper memberMapper;
+    private final PlanMapper planMapper;
+    private final SubscriptionMapper subscriptionMapper;
 
     @Transactional
     @Override
@@ -596,6 +605,31 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
 
         subscriptionRepository.delete(subscription);
+    }
+
+    @Override
+    public MemberDetailsDTO getSubscriptionByMemberId(Long memberId) {
+        Subscription subscription = subscriptionRepository.findByMemberIdAndStatus(memberId, SubscriptionStatus.ACTIVE);
+        if (subscription == null) {
+            throw new EntityNotFoundException("Active subscription not found for member id: " + memberId);
+        }
+
+        MemberDTO memberDTO = memberMapper.toDto(subscription.getMember());
+
+        Member member = memberMapper.toEntity(memberDTO);
+
+        PlanDTO planDTO = planMapper.toDto(subscription.getPlan());
+
+        Plan plan = planMapper.toEntity(planDTO);
+
+        SubscriptionDTO subscriptionDto = subscriptionMapper.toDto(subscription);
+
+        MemberDetailsDTO memberDetailsDTO = new MemberDetailsDTO();
+        memberDetailsDTO.setMember(member);
+        memberDetailsDTO.setPlan(plan);
+        memberDetailsDTO.setSubscription(subscriptionDto);
+
+        return memberDetailsDTO;
     }
 
     // here grace extension by corch
