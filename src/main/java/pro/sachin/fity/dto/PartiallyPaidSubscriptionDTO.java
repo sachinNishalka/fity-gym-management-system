@@ -12,4 +12,13 @@ public class PartiallyPaidSubscriptionDTO {
     private BigDecimal paid;
     private BigDecimal balance;
     private BigDecimal totalAmount;
+
+    private String memberFirstName;
+    private String memberLastName;
+    private Long memberId;
+
+    private String planName;
+    private String planType;
+    private Long planId;
+
 }

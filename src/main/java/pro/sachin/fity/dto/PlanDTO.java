@@ -7,6 +7,7 @@ import pro.sachin.fity.model.PlanType;
 
 @Data
 public class PlanDTO {
+    private Long id;
     private String name;
     private Integer durationDays;
     private BigDecimal price;

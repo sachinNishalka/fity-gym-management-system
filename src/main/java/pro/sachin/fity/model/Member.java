@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -54,7 +55,15 @@ public class Member {
     private MemberStatus status;
 
     // TODO: MISSING - Add @OneToMany relationship to Subscriptions
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Subscription> subscriptions;
+
     // TODO: MISSING - Add @OneToOne relationship to MemberAccess (for door control)
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "member", fetch = FetchType.LAZY)
+    private MemberAccess memberAccess;
+
     // TODO: MISSING - Add @OneToMany relationship to Attendance records
 
     // TODO: MISSING - Add @ManyToMany relationship to Family (through

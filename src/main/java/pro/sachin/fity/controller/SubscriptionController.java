@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import pro.sachin.fity.dto.MemberDetailsDTO;
 import pro.sachin.fity.dto.RenewalRequestDTO;
 import pro.sachin.fity.dto.SubscriptionDTO;
 import pro.sachin.fity.model.Family;
@@ -195,5 +197,11 @@ public class SubscriptionController {
     public ResponseEntity<Void> deleteSubscription(@PathVariable Long subscriptionId) {
         subscriptionService.deleteSubscription(subscriptionId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<MemberDetailsDTO> getSubscriptionByMemberId(@PathVariable Long memberId) {
+        MemberDetailsDTO memberDetailsDTO = subscriptionService.getSubscriptionByMemberId(memberId);
+        return new ResponseEntity<MemberDetailsDTO>(memberDetailsDTO, HttpStatus.OK);
     }
 }
