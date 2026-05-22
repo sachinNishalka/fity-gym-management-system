@@ -88,9 +88,9 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Member> getMemberById(@PathVariable Long id) {
-        Member member = memberService.getMemberById(id);
-        return new ResponseEntity<Member>(member, HttpStatus.OK);
+    public ResponseEntity<MemberDTO> getMemberById(@PathVariable Long id) {
+        MemberDTO member = memberService.getMemberById(id);
+        return new ResponseEntity<MemberDTO>(member, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
