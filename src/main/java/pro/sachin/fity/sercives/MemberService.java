@@ -69,7 +69,7 @@ public interface MemberService {
     // method to get all members
     List<MemberDTO> getAllMembers();
 
-    Member getMemberById(Long id);
+    MemberDTO getMemberById(Long id);
 
     Member updateMember(Long memberId, MemberDTO memberDTO);
 
