@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,9 +82,9 @@ public class MemberController {
     // members)
 
     @GetMapping("/all")
-    public ResponseEntity<List<Member>> getAllMembers() {
-        List<Member> allMembers = memberService.getAllMembers();
-        return new ResponseEntity<List<Member>>(allMembers, HttpStatus.OK);
+    public ResponseEntity<List<MemberDTO>> getAllMembers() {
+        List<MemberDTO> allMembers = memberService.getAllMembers();
+        return new ResponseEntity<List<MemberDTO>>(allMembers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -96,6 +97,12 @@ public class MemberController {
     public ResponseEntity<Member> updateMember(@PathVariable Long id, @RequestBody MemberDTO memberDTO) {
         Member updatedMember = memberService.updateMember(id, memberDTO);
         return new ResponseEntity<Member>(updatedMember, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteMember(@PathVariable Long id) {
+        memberService.deleteMember(id);
+        return new ResponseEntity<HttpStatus>(HttpStatus.OK);
     }
 
 }

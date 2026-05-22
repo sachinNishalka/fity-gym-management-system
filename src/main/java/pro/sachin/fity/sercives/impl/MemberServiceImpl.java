@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -106,10 +107,18 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<Member> getAllMembers() {
+    public List<MemberDTO> getAllMembers() {
 
         List<Member> members = memberRepository.findAll();
-        return members;
+
+        List<MemberDTO> memberDTOs = new ArrayList<>();
+
+        for (Member member : members) {
+            MemberDTO memberDTO = memberMapper.toDto(member);
+            memberDTOs.add(memberDTO);
+        }
+
+        return memberDTOs;
 
     }
 
@@ -130,6 +139,11 @@ public class MemberServiceImpl implements MemberService {
         Member updatedMember = memberMapper.updateMemberFromDto(memberDTO, member);
 
         return memberRepository.save(updatedMember);
+    }
+
+    @Override
+    public void deleteMember(Long memberId) {
+        memberRepository.deleteById(memberId);
     }
 
 }

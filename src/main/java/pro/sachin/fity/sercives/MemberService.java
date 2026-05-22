@@ -67,9 +67,11 @@ public interface MemberService {
     // TODO: Helper method for age-based plan eligibility
 
     // method to get all members
-    List<Member> getAllMembers();
+    List<MemberDTO> getAllMembers();
 
     Member getMemberById(Long id);
 
     Member updateMember(Long memberId, MemberDTO memberDTO);
+
+    void deleteMember(Long memberId);
 }
