@@ -7,11 +7,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 
 @Entity
 @Data
@@ -53,7 +55,15 @@ public class Member {
     private MemberStatus status;
 
     // TODO: MISSING - Add @OneToMany relationship to Subscriptions
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Subscription> subscriptions;
+
     // TODO: MISSING - Add @OneToOne relationship to MemberAccess (for door control)
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "member", fetch = FetchType.LAZY)
+    private MemberAccess memberAccess;
+
     // TODO: MISSING - Add @OneToMany relationship to Attendance records
 
     // TODO: MISSING - Add @ManyToMany relationship to Family (through
@@ -68,8 +78,51 @@ public class Member {
     // specific plan type
 
     @Column(name = "gender")
-    private String gender;  // "male" or "female" or "other"
+    private String gender; // "male" or "female" or "other"
 
     @Column(unique = true, name = "member_code")
     private String memberCode; // this is the code that will be used to identify the member
+
+    @Column(name = "address")
+    private String address;
+
+    private float height;
+
+    private float weight;
+
+    private String idNumber;
+
+    private String emergencyNumber;
+
+    private String facebookName;
+
+    private Boolean bodyBuilding;
+
+    private Boolean fatBurning;
+
+    private Boolean physicalFitness;
+
+    private Boolean sportsSkills;
+
+    private Boolean bodyShape;
+
+    private String otherService;
+
+    private Boolean cholesterol;
+
+    private Boolean bloodPressure;
+
+    private Boolean diabetes;
+
+    private Boolean heartProblem;
+
+    private Boolean surgery;
+
+    private Boolean fractures;
+
+    private Boolean kidneyLiver;
+
+    private Boolean otherDisease;
+
+    private Boolean currentTreatment;
 }

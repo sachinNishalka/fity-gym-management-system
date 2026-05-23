@@ -3,6 +3,7 @@ package pro.sachin.fity.sercives;
 import java.math.BigDecimal;
 import java.util.List;
 
+import pro.sachin.fity.dto.MemberDetailsDTO;
 import pro.sachin.fity.dto.RenewalRequestDTO;
 import pro.sachin.fity.dto.SubscriptionDTO;
 import pro.sachin.fity.model.Subscription;
@@ -118,4 +119,9 @@ public interface SubscriptionService {
     List<Subscription> getPendingSubscriptions();
 
     List<Subscription> getAllSubscriptions();
+
+    void deleteSubscription(Long subscriptionId);
+
+    MemberDetailsDTO getSubscriptionByMemberId(Long memberId);
+
 }

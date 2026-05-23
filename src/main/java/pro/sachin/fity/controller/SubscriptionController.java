@@ -9,11 +9,15 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import pro.sachin.fity.dto.MemberDetailsDTO;
 import pro.sachin.fity.dto.RenewalRequestDTO;
 import pro.sachin.fity.dto.SubscriptionDTO;
 import pro.sachin.fity.model.Family;
@@ -187,5 +191,17 @@ public class SubscriptionController {
         }
 
         return new ResponseEntity<List<SubscriptionDTO>>(allSubscriptions, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{subscriptionId}")
+    public ResponseEntity<Void> deleteSubscription(@PathVariable Long subscriptionId) {
+        subscriptionService.deleteSubscription(subscriptionId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<MemberDetailsDTO> getSubscriptionByMemberId(@PathVariable Long memberId) {
+        MemberDetailsDTO memberDetailsDTO = subscriptionService.getSubscriptionByMemberId(memberId);
+        return new ResponseEntity<MemberDetailsDTO>(memberDetailsDTO, HttpStatus.OK);
     }
 }

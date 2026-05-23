@@ -64,8 +64,8 @@ public class GraceExtensionServiceImpl implements GraceExtensionService {
                 // checking the extension limits 
                 long extensionCount = graceExtensionRepository.countBySubscriptionId(subscriptionId);
 
-                if(extensionCount >=3){
-                    throw new IllegalStateException("Maximum 3 extensions per subscription reached");
+                if(extensionCount >=2){
+                    throw new IllegalStateException("Maximum 2 extensions per subscription reached");
                 }
 
                 // if none of above happens then create the grace extension subscription
@@ -99,8 +99,6 @@ public class GraceExtensionServiceImpl implements GraceExtensionService {
                 
                 return savedExtension;
     }
-
-
 
     @Override
     public GraceExtension extend(GraceExtensionDTO graceExtensionDTO) {

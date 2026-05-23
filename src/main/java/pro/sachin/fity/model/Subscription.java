@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,7 +31,7 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -38,7 +39,7 @@ public class Subscription {
     @JoinColumn(name = "family_id")
     private Family family;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "plan_id", nullable = false)
     private Plan plan;
 
@@ -78,6 +79,9 @@ public class Subscription {
     // TODO: MISSING - Add @OneToMany relationship to GraceExtensions
 
     // ============= VALIDATION LOGIC =============
+
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Payments> payments;
 
     @PrePersist
     @PreUpdate
