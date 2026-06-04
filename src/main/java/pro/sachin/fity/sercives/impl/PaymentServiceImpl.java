@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import pro.sachin.fity.dto.PartiallyPaidSubscriptionDTO;
 import pro.sachin.fity.dto.PaymentDTO;
+import pro.sachin.fity.dto.SubscriptionDTO;
+import pro.sachin.fity.mapper.SubscriptionMapper;
 import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.Family;
 import pro.sachin.fity.model.Member;
@@ -34,6 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionChargesRepository subscriptionChargesRepository;
     private final MemberAccessService memberAccessService;
+    private final SubscriptionMapper  subscriptionMapper;
 
     @Override
     @Transactional
@@ -182,6 +185,37 @@ public class PaymentServiceImpl implements PaymentService {
     public List<Subscription> paymentsForToday() {
         List<Subscription> subscriptions = subscriptionRepository.findByEndDate(java.time.LocalDate.now());
         return subscriptions;
+    }
+
+    @Override
+    public List<SubscriptionDTO> getMissingPayments() {
+
+        List<SubscriptionDTO> subscriptionDTOs = new ArrayList<>();
+        
+        List<Subscription> subscriptions = subscriptionRepository.findByStatus(SubscriptionStatus.IN_GRACE);
+
+        for (Subscription subscription : subscriptions) {
+            SubscriptionDTO subscriptionDTO = subscriptionMapper.toDto(subscription);
+                subscriptionDTO.setId(subscription.getId());
+
+                if (subscription.getMember() != null) {
+                    subscriptionDTO.setMemberId(subscription.getMember().getId());
+                    subscriptionDTO.setMemberName(subscription.getMember().getFirstName()+ " " + subscription.getMember().getLastName());
+                }
+
+                if (subscription.getFamily() != null) {
+                    subscriptionDTO.setFamilyId(subscription.getFamily().getId());
+                    subscriptionDTO.setFamilyName(subscription.getFamily().getFamilyName());
+                }
+
+                subscriptionDTO.setPlanId(subscription.getPlan().getId());
+                subscriptionDTO.setPlanName(subscription.getPlan().getName());
+
+                subscriptionDTOs.add(subscriptionDTO);
+              
+        }
+
+        return subscriptionDTOs;
     }
 
 }

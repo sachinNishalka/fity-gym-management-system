@@ -115,6 +115,7 @@ public class MemberServiceImpl implements MemberService {
 
         for (Member member : members) {
             MemberDTO memberDTO = memberMapper.toDto(member);
+            memberDTO.setMemberAccessStatus(member.getMemberAccess().getAccessStatus().toString());
             memberDTOs.add(memberDTO);
         }
 
