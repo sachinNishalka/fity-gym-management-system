@@ -1,5 +1,6 @@
 package pro.sachin.fity.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import pro.sachin.fity.dto.PartiallyPaidSubscriptionDTO;
 import pro.sachin.fity.dto.PaymentDTO;
+import pro.sachin.fity.dto.SubscriptionDTO;
+import pro.sachin.fity.mapper.SubscriptionMapper;
 import pro.sachin.fity.model.Payments;
 import pro.sachin.fity.model.Subscription;
 import pro.sachin.fity.repository.SubscriptionRepository;
@@ -28,7 +31,8 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     // TODO: CRITICAL - Repository should NOT be in controller - move to service
-    private final SubscriptionRepository subscriptionRepository;
+
+
 
     // 2. If fully paid, update member_access to ALLOWED (unblock door)
     // 4. Generate receipt number if not provided
@@ -38,9 +42,7 @@ public class PaymentController {
 
     @PostMapping("/save")
     ResponseEntity<PaymentDTO> savePayment(@RequestBody PaymentDTO paymentDTO) {
-
         paymentService.savePayment(paymentDTO);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(paymentDTO);
     }
 
@@ -53,6 +55,12 @@ public class PaymentController {
     @GetMapping("/payments-for-today")
     public ResponseEntity<List<Subscription>> paymentsForToday() {
         List<Subscription> subscriptions = paymentService.paymentsForToday();
+        return ResponseEntity.ok(subscriptions);
+    }
+
+    @GetMapping("/missing-payments")
+    public ResponseEntity<List<SubscriptionDTO>> getMissingPayments(){
+        List<SubscriptionDTO> subscriptions = paymentService.getMissingPayments();
         return ResponseEntity.ok(subscriptions);
     }
 

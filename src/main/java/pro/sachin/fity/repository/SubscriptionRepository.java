@@ -67,4 +67,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
         List<Subscription> findByEndDate(LocalDate endDate);
 
         Subscription findByMemberIdAndStatus(Long memberId, SubscriptionStatus active);
+
+       
 }
