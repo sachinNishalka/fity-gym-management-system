@@ -4,6 +4,7 @@ import java.util.List;
 
 import pro.sachin.fity.dto.PartiallyPaidSubscriptionDTO;
 import pro.sachin.fity.dto.PaymentDTO;
+import pro.sachin.fity.dto.SubscriptionDTO;
 import pro.sachin.fity.model.Payments;
 import pro.sachin.fity.model.Subscription;
 
@@ -29,6 +30,8 @@ public interface PaymentService {
     // TODO: Validate amount doesn't exceed balance due
     // TODO: Trigger post-payment logic (balance check, access update)
     // TODO: Return payment details + updated subscription balance
+
+    List<SubscriptionDTO> getMissingPayments();
 
     // TODO: IMPLEMENT - Get payments for subscription
     // TODO: List<PaymentDTO> getPaymentsForSubscription(Long subscriptionId);

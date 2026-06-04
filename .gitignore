@@ -33,3 +33,7 @@ build/
 .vscode/
 /home/fity-gym-management-system/src/main/resources/application.properties
 ./src/main/resources/application.properties
+.DS_Store
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore

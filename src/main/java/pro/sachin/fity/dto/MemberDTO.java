@@ -13,6 +13,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
+import pro.sachin.fity.model.AccessStatus;
+import pro.sachin.fity.model.MemberAccess;
 import pro.sachin.fity.model.MemberStatus;
 
 @Data
@@ -79,4 +81,6 @@ public class MemberDTO {
     private Boolean otherDisease;
 
     private Boolean currentTreatment;
+
+    private String memberAccessStatus;
 }

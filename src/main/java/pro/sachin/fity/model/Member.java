@@ -125,4 +125,7 @@ public class Member {
     private Boolean otherDisease;
 
     private Boolean currentTreatment;
+
+
+
 }
