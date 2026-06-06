@@ -1,11 +1,13 @@
 package pro.sachin.fity.sercives.impl;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import pro.sachin.fity.dto.GymAccessDTO;
 import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.model.MemberAccess;

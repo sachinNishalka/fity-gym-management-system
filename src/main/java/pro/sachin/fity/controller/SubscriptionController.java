@@ -194,13 +194,13 @@ public class SubscriptionController {
     }
 
     @DeleteMapping("/delete/{subscriptionId}")
-    public ResponseEntity<Void> deleteSubscription(@PathVariable Long subscriptionId) {
+    public ResponseEntity<Void> deleteSubscription(@PathVariable("subscriptionId") Long subscriptionId) {
         subscriptionService.deleteSubscription(subscriptionId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<MemberDetailsDTO> getSubscriptionByMemberId(@PathVariable Long memberId) {
+    public ResponseEntity<MemberDetailsDTO> getSubscriptionByMemberId(@PathVariable("memberId") Long memberId) {
         MemberDetailsDTO memberDetailsDTO = subscriptionService.getSubscriptionByMemberId(memberId);
         return new ResponseEntity<MemberDetailsDTO>(memberDetailsDTO, HttpStatus.OK);
     }

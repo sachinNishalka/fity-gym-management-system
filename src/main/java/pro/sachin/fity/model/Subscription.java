@@ -80,7 +80,7 @@ public class Subscription {
 
     // ============= VALIDATION LOGIC =============
 
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payments> payments;
 
     @PrePersist

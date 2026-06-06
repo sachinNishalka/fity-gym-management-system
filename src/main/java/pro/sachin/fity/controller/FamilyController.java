@@ -86,7 +86,7 @@ public class FamilyController {
     // TODO: SECURITY - Add authentication and authorization
 
     @GetMapping("/{id}")
-    public ResponseEntity<FamilyResponseDTO> getFamilyById(@PathVariable Long id) {
+    public ResponseEntity<FamilyResponseDTO> getFamilyById(@PathVariable("id") Long id) {
         FamilyResponseDTO family = familyService.getFamilyById(id);
         return new ResponseEntity<FamilyResponseDTO>(family, HttpStatus.OK);
     }

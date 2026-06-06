@@ -8,7 +8,8 @@ RUN mvn -DskipTests dependency:go-offline
 
 # compile & package
 COPY src ./src
-RUN mvn -DskipTests clean package   # <— THIS creates /app/target/*.jar
+RUN mvn -X -DskipTests  clean package   
+# <— THIS creates /app/target/*.jar
 
 # --- Runtime stage: run JAR on a slim JRE ---
 FROM eclipse-temurin:21-jre-alpine

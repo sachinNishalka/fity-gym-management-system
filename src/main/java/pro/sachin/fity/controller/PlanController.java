@@ -78,27 +78,27 @@ public class PlanController {
 
     // returning all existing plans
     @GetMapping("/all")
-    ResponseEntity<List<Plan>> getAllPlans(){
+    ResponseEntity<List<Plan>> getAllPlans() {
         List<Plan> plans = planService.getAllPlans();
         return new ResponseEntity<List<Plan>>(plans, HttpStatus.OK);
-        
+
     }
 
-    // get plan details by if
+    // get plan details by id
     @GetMapping("/{id}")
-    ResponseEntity<Plan> getPlanById(@PathVariable Long id){
+    ResponseEntity<Plan> getPlanById(@PathVariable("id") Long id) {
         Plan plan = planService.getPlanById(id);
         return new ResponseEntity<Plan>(plan, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<Plan> updatePlan(@PathVariable Long id, @RequestBody PlanDTO planDTO){
+    ResponseEntity<Plan> updatePlan(@PathVariable("id") Long id, @RequestBody PlanDTO planDTO) {
         Plan updatedPlan = planService.updatePlan(id, planDTO);
         return new ResponseEntity<Plan>(updatedPlan, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    ResponseEntity<Void> deletePlan(@PathVariable Long id){
+    ResponseEntity<Void> deletePlan(@PathVariable("id") Long id) {
         planService.deletePlan(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
