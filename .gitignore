@@ -30,10 +30,12 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
-.vscode/
 .DS_Store
 temp_auto_push.bat
 temp_interactive_push.bat
 .gitignore
 
 .src/main/resources/application.properties
+/home/fity-gym-management-system/src/main/resources/application.properties
+./src/main/resources/application.properties
+branch_structure.json

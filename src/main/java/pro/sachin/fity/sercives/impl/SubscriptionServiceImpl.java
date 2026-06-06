@@ -629,6 +629,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         SubscriptionCharges subscriptionCharges = subscription.getSubscriptionCharges();
 
+        
         SubscriptionChargesDTO subscriptionChargesDto = subscriptionChargesMapper.toDto(subscriptionCharges);
 
         MemberDetailsDTO memberDetailsDTO = new MemberDetailsDTO();
