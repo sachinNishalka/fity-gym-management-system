@@ -88,19 +88,19 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberDTO> getMemberById(@PathVariable Long id) {
+    public ResponseEntity<MemberDTO> getMemberById(@PathVariable("id") Long id) {
         MemberDTO member = memberService.getMemberById(id);
         return new ResponseEntity<MemberDTO>(member, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Member> updateMember(@PathVariable Long id, @RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<Member> updateMember(@PathVariable("id") Long id, @RequestBody MemberDTO memberDTO) {
         Member updatedMember = memberService.updateMember(id, memberDTO);
         return new ResponseEntity<Member>(updatedMember, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteMember(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteMember(@PathVariable("id") Long id) {
         memberService.deleteMember(id);
         return new ResponseEntity<HttpStatus>(HttpStatus.OK);
     }

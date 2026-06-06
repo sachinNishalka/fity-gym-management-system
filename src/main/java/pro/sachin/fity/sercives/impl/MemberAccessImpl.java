@@ -70,8 +70,4 @@ public class MemberAccessImpl implements MemberAccessService {
     deviceCommandService.queueAccessUpdate(memberId, member.getMemberCode(), accessStatus, allowedUntil);
   }
 
-  @Override
-  public List<GymAccessDTO> getAllMemberAccess() {
-    
-
 }
