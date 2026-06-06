@@ -2,7 +2,7 @@ package pro.sachin.fity.controller;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +34,7 @@ import pro.sachin.fity.sercives.SubscriptionService;
 @RestController
 @RequestMapping("api/v1/subscription")
 @CrossOrigin
+@Slf4j
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
@@ -186,7 +187,11 @@ public class SubscriptionController {
             subscriptionDTO.setDueDate(subscription.getDueDate());
             subscriptionDTO.setGraceEndDate(subscription.getGraceEndDate());
             subscriptionDTO.setStatus(subscription.getStatus().name());
-            subscriptionDTO.setDiscountAmount(subscription.getSubscriptionCharges().getDiscountAmount());
+            if (subscription.getSubscriptionCharges() != null) {
+                subscriptionDTO.setDiscountAmount(subscription.getSubscriptionCharges().getDiscountAmount());
+            } else {
+                log.error("Subscription charges not found for subscription: " + subscription.getId());
+            }
             allSubscriptions.add(subscriptionDTO);
         }
 
