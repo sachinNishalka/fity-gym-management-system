@@ -37,3 +37,5 @@ temp_interactive_push.bat
 .gitignore
 
 .src/main/resources/application.properties
+/home/fity-gym-management-system/src/main/resources/application.properties
+./src/main/resources/application.properties
