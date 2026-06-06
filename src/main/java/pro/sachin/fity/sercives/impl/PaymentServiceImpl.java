@@ -132,6 +132,12 @@ public class PaymentServiceImpl implements PaymentService {
             subscriptionRepository.save(subscription);
             log.info("Subscription {} activated from PENDING (first payment)", subscriptionId);
         }
+
+        if (subscription.getStatus() == SubscriptionStatus.PENDING_RENEWAL) {
+            subscription.setStatus(SubscriptionStatus.ACTIVE);
+            subscriptionRepository.save(subscription);
+            log.info("Subscription {} activated from PENDING (first payment)", subscriptionId);
+        }
     }
 
     public List<PartiallyPaidSubscriptionDTO> getPartiallyPaidSubscriptions() {
