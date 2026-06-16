@@ -1,6 +1,7 @@
 package pro.sachin.fity.sercives.impl;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import pro.sachin.fity.dto.GymAccessDTO;
+import pro.sachin.fity.dto.MemberAccessDTO;
 import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.model.MemberAccess;
@@ -68,6 +70,31 @@ public class MemberAccessImpl implements MemberAccessService {
     memberAccessRepository.save(memberAccess);
 
     deviceCommandService.queueAccessUpdate(memberId, member.getMemberCode(), accessStatus, allowedUntil);
+  }
+
+  @Override
+  public List<MemberAccessDTO> getAllMembersAccess() {
+
+    List<MemberAccessDTO> memberAccessDTOs = new ArrayList<>();
+
+    List<MemberAccess> membersAccess = memberAccessRepository.findAll();
+
+    for (MemberAccess memberAccess : membersAccess) {
+      MemberAccessDTO memberAccessDTO = new MemberAccessDTO();
+
+      memberAccessDTO.setMemberId(memberAccess.getMemberId());
+      memberAccessDTO.setFirstName(memberAccess.getMember().getFirstName());
+      memberAccessDTO.setLastName(memberAccess.getMember().getLastName());
+      memberAccessDTO.setAllowedUntil(memberAccess.getAllowedUntil());
+      memberAccessDTO.setReason(memberAccess.getReason());
+      memberAccessDTO.setAccessStatus(memberAccess.getAccessStatus().toString());
+
+      memberAccessDTOs.add(memberAccessDTO);
+
+    }
+
+    return memberAccessDTOs;
+
   }
 
 }
