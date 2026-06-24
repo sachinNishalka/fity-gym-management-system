@@ -277,8 +277,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         renewalSubscription.setPlan(plan);
 
         LocalDate startDate = currenSubscription.getEndDate().plusDays(1); // Always use planned start date
-        long borrowedDays = calculateConsumedDays(currenSubscription);
-        LocalDate endDate = calculateFairRenewalEndDate(startDate, plan, borrowedDays);
+        // long borrowedDays = calculateConsumedDays(currenSubscription);
+        // LocalDate endDate = calculateFairRenewalEndDate(startDate, plan, borrowedDays);
+        LocalDate endDate = calculateEndDate(startDate, plan);
         LocalDate dueDate = calculateDueDate(endDate);
         LocalDate graceEndDate = calculateGraceEndDate(endDate);
 
@@ -416,7 +417,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     // Enhanced method to track renewal adjustments for reporting and transparency
     public Map<String, Object> getRenewalAdjustmentInfo(Long renewalSubscriptionId) {
         Subscription renewal = subscriptionRepository.findById(renewalSubscriptionId)
-                .orElseThrow(() -> new EntityNotFoundException("Renewal subscription not found"));
+                .orElseThrow(() -> new Entit0 yNotFoundException("Renewal subscription not found"));
 
         Map<String, Object> info = new HashMap<>();
         info.put("renewalId", renewalSubscriptionId);
