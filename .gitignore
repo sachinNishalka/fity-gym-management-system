@@ -38,3 +38,4 @@ temp_interactive_push.bat
 .src/main/resources/application.properties
 /home/fity-gym-management-system/src/main/resources/application.properties
 ./src/main/resources/application.properties
+branch_structure.json
