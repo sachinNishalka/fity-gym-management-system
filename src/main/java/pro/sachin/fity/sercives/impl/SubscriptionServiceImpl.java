@@ -417,7 +417,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     // Enhanced method to track renewal adjustments for reporting and transparency
     public Map<String, Object> getRenewalAdjustmentInfo(Long renewalSubscriptionId) {
         Subscription renewal = subscriptionRepository.findById(renewalSubscriptionId)
-                .orElseThrow(() -> new Entit0 yNotFoundException("Renewal subscription not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Renewal subscription not found"));
 
         Map<String, Object> info = new HashMap<>();
         info.put("renewalId", renewalSubscriptionId);
