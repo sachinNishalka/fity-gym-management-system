@@ -21,7 +21,7 @@ import lombok.Data;
 @Data
 @Table(name = "member_access")
 public class MemberAccess {
-    
+
     @Id
     @Column(name = "member_id")
     private Long memberId;
@@ -47,5 +47,3 @@ public class MemberAccess {
     private AccessStatus accessStatus;
 
 }
-
-

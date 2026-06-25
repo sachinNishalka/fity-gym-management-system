@@ -277,8 +277,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         renewalSubscription.setPlan(plan);
 
         LocalDate startDate = currenSubscription.getEndDate().plusDays(1); // Always use planned start date
-        long borrowedDays = calculateConsumedDays(currenSubscription);
-        LocalDate endDate = calculateFairRenewalEndDate(startDate, plan, borrowedDays);
+        // long borrowedDays = calculateConsumedDays(currenSubscription);
+        // LocalDate endDate = calculateFairRenewalEndDate(startDate, plan, borrowedDays);
+        LocalDate endDate = calculateEndDate(startDate, plan);
         LocalDate dueDate = calculateDueDate(endDate);
         LocalDate graceEndDate = calculateGraceEndDate(endDate);
 
