@@ -11,4 +11,7 @@ public interface MemberAccessService {
     void updateMemberAccess(Long memberId, LocalDate allowedUntil, AccessStatus accessStatus, String reason);
 
     List<MemberAccessDTO> getAllMembersAccess();
+
+    List<MemberAccessDTO> getAllDeniedMemberAccess();
+
 }
