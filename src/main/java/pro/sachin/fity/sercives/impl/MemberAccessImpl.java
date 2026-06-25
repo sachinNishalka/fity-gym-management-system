@@ -97,4 +97,25 @@ public class MemberAccessImpl implements MemberAccessService {
 
   }
 
+  @Override
+  public List<MemberAccessDTO> getAllDeniedMemberAccess() {
+   
+   List<MemberAccessDTO> memberAccessDTOs = new ArrayList<>();
+
+   List<MemberAccess> membersAccess = memberAccessRepository.findAllByAccessStatus(AccessStatus.BLOCKED);
+
+   for (MemberAccess memberAccess : membersAccess) {
+    MemberAccessDTO memberAccessDTO = new MemberAccessDTO();
+    memberAccessDTO.setMemberId(memberAccess.getMemberId());
+    memberAccessDTO.setFirstName(memberAccess.getMember().getFirstName());
+    memberAccessDTO.setLastName(memberAccess.getMember().getLastName());
+    memberAccessDTO.setAllowedUntil(memberAccess.getAllowedUntil());
+    memberAccessDTO.setReason(memberAccess.getReason());
+    memberAccessDTO.setAccessStatus(memberAccess.getAccessStatus().toString());
+    memberAccessDTOs.add(memberAccessDTO);
+   }
+
+   return memberAccessDTOs;
+  }
+
 }
