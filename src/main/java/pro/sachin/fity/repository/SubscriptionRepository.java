@@ -68,5 +68,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
         Subscription findByMemberIdAndStatus(Long memberId, SubscriptionStatus active);
 
-       
+        Subscription findByFamilyId(Long familyId);
+
 }

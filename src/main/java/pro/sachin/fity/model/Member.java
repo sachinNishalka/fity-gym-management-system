@@ -126,6 +126,4 @@ public class Member {
 
     private Boolean currentTreatment;
 
-
-
 }
