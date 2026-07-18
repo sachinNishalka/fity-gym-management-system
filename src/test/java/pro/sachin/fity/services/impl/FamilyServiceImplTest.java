@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,7 +63,8 @@ public class FamilyServiceImplTest {
         Family savedFamily = new Family();
         savedFamily.setId(1L);
         savedFamily.setFamilyName("Smith Family");
-        savedFamily.setMembers(List.of(member1, member2));
+
+        savedFamily.setMembers(Set.of(member1, member2));
 
         when(familyRepository.save(any(Family.class)))
                 .thenReturn(savedFamily);

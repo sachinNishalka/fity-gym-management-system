@@ -209,4 +209,10 @@ public class SubscriptionController {
         MemberDetailsDTO memberDetailsDTO = subscriptionService.getSubscriptionByMemberId(memberId);
         return new ResponseEntity<MemberDetailsDTO>(memberDetailsDTO, HttpStatus.OK);
     }
+
+    @GetMapping("/renewal")
+    public ResponseEntity<List<SubscriptionDTO>> getRenewalSubscriptionList() {
+        List<SubscriptionDTO> renewalSubscriptionsList = subscriptionService.getRenewalSubscriptionsList();
+        return new ResponseEntity<List<SubscriptionDTO>>(renewalSubscriptionsList, HttpStatus.OK);
+    }
 }

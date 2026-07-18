@@ -47,16 +47,13 @@ public class FamilyController {
     // TODO: This requires family_members junction table implementation
 
     @PutMapping("addmember/{id}")
-    public String putMethodName(@PathVariable String id, @RequestBody String entity) {
-        // TODO: process PUT request
-
-        return entity;
-    }
-
     ResponseEntity<FamilyResponseDTO> addMemberToFamily(@PathVariable("familyId") Long familyId,
             @RequestParam("memberId") Long memberId) {
+
         FamilyResponseDTO updatedFamily = familyService.addMemberToFamily(familyId, memberId);
+
         return new ResponseEntity<FamilyResponseDTO>(updatedFamily, HttpStatus.OK);
+
     }
 
     // TODO: IMPLEMENT - Remove member from family
@@ -99,7 +96,6 @@ public class FamilyController {
     // TODO: Remove all family_member associations
 
     // delete family
-
     @DeleteMapping("/delete-family/{familyId}")
     ResponseEntity<?> deleteFamily(@PathVariable("familyId") Long familyId) {
         familyService.deleteFamily(familyId);

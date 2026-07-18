@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -629,7 +630,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         SubscriptionCharges subscriptionCharges = subscription.getSubscriptionCharges();
 
-        
         SubscriptionChargesDTO subscriptionChargesDto = subscriptionChargesMapper.toDto(subscriptionCharges);
 
         MemberDetailsDTO memberDetailsDTO = new MemberDetailsDTO();
@@ -639,6 +639,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         memberDetailsDTO.setSubscriptionCharges(subscriptionChargesDto);
 
         return memberDetailsDTO;
+    }
+
+    @Override
+    public List<SubscriptionDTO> getRenewalSubscriptionsList() {
+
+        List<SubscriptionDTO> renewalSubscriptionsList = new ArrayList<>();
+
+        List<Subscription> renewalSubscriptions = subscriptionRepository.findRenwalSubscriptionList();
+
+        for (Subscription subscription : renewalSubscriptions) {
+            SubscriptionDTO subscriptionDTO = subscriptionMapper.toDto(subscription);
+            renewalSubscriptionsList.add(subscriptionDTO);
+        }
+
+        return renewalSubscriptionsList;
     }
 
     // here grace extension by corch
