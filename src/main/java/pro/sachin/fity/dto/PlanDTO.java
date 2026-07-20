@@ -15,4 +15,5 @@ public class PlanDTO {
     private int ageMin;
     private int ageMax;
     private int maximumFamilyMembers;
+    private int subscriptionCount;
 }

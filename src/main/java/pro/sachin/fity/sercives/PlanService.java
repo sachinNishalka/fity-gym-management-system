@@ -11,11 +11,12 @@ public interface PlanService {
 
     List<Plan> getAllPlans();
 
-    Plan getPlanById(Long id);
+    PlanDTO getPlanById(Long id);
 
-    Plan updatePlan(Long id, PlanDTO planDTO);
+    PlanDTO updatePlan(Long id, PlanDTO planDTO);
 
     void deletePlan(Long id);
 
+    List<PlanDTO> getAllPlansWithSubscriptionsCount();
 
 }

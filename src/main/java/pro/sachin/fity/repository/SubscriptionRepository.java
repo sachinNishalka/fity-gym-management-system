@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import pro.sachin.fity.model.Plan;
 import pro.sachin.fity.model.Subscription;
 import pro.sachin.fity.model.SubscriptionStatus;
 
@@ -74,5 +76,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
         @Query(value = "SELECT * FROM subscription WHERE status = 'DUE' OR status = 'ACTIVE' OR status = 'IN_GRACE'", nativeQuery = true)
         List<Subscription> findRenwalSubscriptionList();
+
+        List<Subscription> findByPlan(Plan plan);
 
 }

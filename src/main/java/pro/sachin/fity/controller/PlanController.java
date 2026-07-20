@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pro.sachin.fity.dto.PlanDTO;
 import pro.sachin.fity.model.Plan;
 import pro.sachin.fity.sercives.PlanService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @RestController
@@ -86,21 +88,27 @@ public class PlanController {
 
     // get plan details by id
     @GetMapping("/{id}")
-    ResponseEntity<Plan> getPlanById(@PathVariable("id") Long id) {
-        Plan plan = planService.getPlanById(id);
-        return new ResponseEntity<Plan>(plan, HttpStatus.OK);
+    ResponseEntity<PlanDTO> getPlanById(@PathVariable("id") Long id) {
+        PlanDTO planDTO = planService.getPlanById(id);
+        return new ResponseEntity<PlanDTO>(planDTO, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<Plan> updatePlan(@PathVariable("id") Long id, @RequestBody PlanDTO planDTO) {
-        Plan updatedPlan = planService.updatePlan(id, planDTO);
-        return new ResponseEntity<Plan>(updatedPlan, HttpStatus.OK);
+    ResponseEntity<PlanDTO> updatePlan(@PathVariable("id") Long id, @RequestBody PlanDTO planDTO) {
+        PlanDTO updatedPlan = planService.updatePlan(id, planDTO);
+        return new ResponseEntity<PlanDTO>(updatedPlan, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     ResponseEntity<Void> deletePlan(@PathVariable("id") Long id) {
         planService.deletePlan(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @GetMapping("/all/counts")
+    public ResponseEntity<List<PlanDTO>> getAllPlansWtithSubcriptionsCount() {
+        List<PlanDTO> planDTOs = planService.getAllPlansWithSubscriptionsCount();
+        return new ResponseEntity<List<PlanDTO>>(planDTOs, HttpStatus.OK);
     }
 
 }
