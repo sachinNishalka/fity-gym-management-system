@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 @Builder(toBuilder = true)
 @ToString(exclude = { "subscriptions", "memberAccess", "family" }) // Exclude lazy fields
 @EqualsAndHashCode(exclude = { "subscriptions", "memberAccess", "family" }) // Exclude lazy fields
-
 public class Member {
 
     @Id
