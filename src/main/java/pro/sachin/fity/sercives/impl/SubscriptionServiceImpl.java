@@ -8,9 +8,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -648,9 +650,28 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         List<Subscription> renewalSubscriptions = subscriptionRepository.findRenwalSubscriptionList();
 
-        for (Subscription subscription : renewalSubscriptions) {
-            SubscriptionDTO subscriptionDTO = subscriptionMapper.toDto(subscription);
-            renewalSubscriptionsList.add(subscriptionDTO);
+        List<Member> members = memberRepository.findAll();
+
+        for (Member member : members) {
+            List<Subscription> subscriptions = member.getSubscriptions();
+
+            for (Subscription subscription : subscriptions) {
+
+                ArrayList<Long> ids = new ArrayList<>();
+                ids.add(subscription.getId());
+
+                List<Long> sorted = ids.stream()
+                        .sorted(Comparator.reverseOrder())
+                        .collect(Collectors.toList());
+
+                Subscription selectedSubscription = subscriptionRepository.findById(sorted.getFirst())
+                        .orElseThrow(() -> new EntityNotFoundException("Subscription not found"));
+
+                SubscriptionDTO subscriptionDTO = subscriptionMapper.toDto(selectedSubscription);
+
+                renewalSubscriptionsList.add(subscriptionDTO);
+
+            }
         }
 
         return renewalSubscriptionsList;

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import pro.sachin.fity.exception.DeviceCommandExceptions.DeviceCommandException;
 import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.CommandStatus;
 import pro.sachin.fity.model.CommandType;
@@ -128,7 +129,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
             return objectMapper.writeValueAsString(map);
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize payload to JSON", e);
-            throw new RuntimeException("Failed to serialize command payload", e);
+            throw new DeviceCommandException("Failed to serialize command payload");
         }
     }
 }
