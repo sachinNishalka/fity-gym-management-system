@@ -1,6 +1,7 @@
 package pro.sachin.fity.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import pro.sachin.fity.dto.SubscriptionDTO;

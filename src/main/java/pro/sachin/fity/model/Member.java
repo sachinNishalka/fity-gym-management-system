@@ -1,7 +1,14 @@
 package pro.sachin.fity.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,7 +23,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 
 @Entity
-@Data
+@Table(name = "member")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@ToString(exclude = { "subscriptions", "memberAccess", "family" }) // Exclude lazy fields
+@EqualsAndHashCode(exclude = { "subscriptions", "memberAccess", "family" }) // Exclude lazy fields
 
 public class Member {
 
