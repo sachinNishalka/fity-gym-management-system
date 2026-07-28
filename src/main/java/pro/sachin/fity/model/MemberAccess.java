@@ -16,12 +16,15 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "member_access")
 public class MemberAccess {
-    
+
     @Id
     @Column(name = "member_id")
     private Long memberId;
@@ -47,5 +50,3 @@ public class MemberAccess {
     private AccessStatus accessStatus;
 
 }
-
-
