@@ -151,6 +151,7 @@ public class SubscriptionController {
             subscriptionDTO.setGraceEndDate(subscription.getGraceEndDate());
             subscriptionDTO.setStatus(subscription.getStatus().name());
             subscriptionDTO.setDiscountAmount(subscription.getSubscriptionCharges().getDiscountAmount());
+            subscriptionDTO.setMemberCode(subscription.getMember().getMemberCode());
             pendingSubscriptions.add(subscriptionDTO);
         }
 
@@ -187,6 +188,7 @@ public class SubscriptionController {
             subscriptionDTO.setDueDate(subscription.getDueDate());
             subscriptionDTO.setGraceEndDate(subscription.getGraceEndDate());
             subscriptionDTO.setStatus(subscription.getStatus().name());
+            subscriptionDTO.setMemberCode(subscription.getMember().getMemberCode());
             if (subscription.getSubscriptionCharges() != null) {
                 subscriptionDTO.setDiscountAmount(subscription.getSubscriptionCharges().getDiscountAmount());
             } else {

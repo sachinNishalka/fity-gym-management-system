@@ -101,4 +101,6 @@ public class SubscriptionDTO {
     // this is a receipt number for initial payment, this is not neccessary
     private String initialReceiptNumber;
 
+    private String memberCode;
+
 }
