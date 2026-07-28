@@ -9,6 +9,7 @@ import pro.sachin.fity.dto.MemberAccessDTO;
 import pro.sachin.fity.model.MemberAccess;
 import pro.sachin.fity.sercives.MemberAccessService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,21 @@ public class GymAccessController {
 
    @GetMapping
    public ResponseEntity<List<MemberAccessDTO>> getAllMemberAccess() {
-      List<MemberAccessDTO> memberAccessList = memberAccessService.getAllMemberAccess();
-      return ResponseEntity.ok(memberAccessList);
+      List<MemberAccess> memberAccessList = memberAccessService.getAllMemberAccess();
+
+      List<MemberAccessDTO> list = new ArrayList<>();
+
+      for (MemberAccess gymAccess : memberAccessList) {
+         MemberAccessDTO memberAccessDTO = new MemberAccessDTO();
+         memberAccessDTO.setMemberName(gymAccess.getMember().getFirstName());
+         memberAccessDTO.setMemberCode(gymAccess.getMember().getMemberCode());
+         memberAccessDTO.setAccessStatus(gymAccess.getAccessStatus());
+         memberAccessDTO.setAllowedUntil(gymAccess.getAllowedUntil());
+
+         list.add(memberAccessDTO);
+      }
+
+      return ResponseEntity.ok(list);
    }
 
 }

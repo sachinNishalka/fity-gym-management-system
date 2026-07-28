@@ -14,7 +14,8 @@ public interface MemberAccessMapper {
 
     @Mapping(source = "member.memberCode", target = "memberCode")
     @Mapping(source = "member.firstName", target = "memberName", qualifiedByName = "getFullName")
-    @Mapping(source = "accessStatus", target = "accessStatus", qualifiedByName = "accessStatusToBoolean")
+    // @Mapping(source = "accessStatus", target = "accessStatus", qualifiedByName =
+    // "accessStatusToBoolean")
     MemberAccessDTO toDto(MemberAccess memberAccess);
 
     @Named("getFullName")

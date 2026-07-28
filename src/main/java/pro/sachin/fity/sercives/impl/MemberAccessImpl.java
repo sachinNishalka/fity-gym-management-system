@@ -72,14 +72,11 @@ public class MemberAccessImpl implements MemberAccessService {
     memberAccessRepository.save(memberAccess);
 
     deviceCommandService.queueAccessUpdate(memberId, member.getMemberCode(), accessStatus, allowedUntil);
+
   }
 
   @Override
-  public List<MemberAccessDTO> getAllMemberAccess() {
-    return memberAccessRepository.findAll()
-        .stream()
-        .map(memberAccessMapper::toDto)
-        .collect(Collectors.toList());
+  public List<MemberAccess> getAllMemberAccess() {
+    return memberAccessRepository.findAllWithSubscriptionAndMember();
   }
-
 }
