@@ -13,12 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("api/v1/gym-access")
 @RequiredArgsConstructor
+@CrossOrigin
 public class GymAccessController {
 
    private final MemberAccessService memberAccessService;
