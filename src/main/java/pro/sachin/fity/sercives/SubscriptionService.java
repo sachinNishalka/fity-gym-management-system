@@ -124,4 +124,6 @@ public interface SubscriptionService {
 
     MemberDetailsDTO getSubscriptionByMemberId(Long memberId);
 
+    List<SubscriptionDTO> getRenewalSubscriptionsList();
+
 }

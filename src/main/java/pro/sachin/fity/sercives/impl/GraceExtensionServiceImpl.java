@@ -2,6 +2,8 @@ package pro.sachin.fity.sercives.impl;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +15,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import pro.sachin.fity.dto.GraceExtensionDTO;
+import pro.sachin.fity.dto.GraceExtensonResponseDTO;
 import pro.sachin.fity.exception.NotInGracePeriodException;
+import pro.sachin.fity.mapper.GraceExtensionResponseMapper;
 import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.GraceExtension;
+import pro.sachin.fity.model.Member;
 import pro.sachin.fity.model.Subscription;
 import pro.sachin.fity.model.SubscriptionStatus;
 import pro.sachin.fity.model.User;
@@ -32,6 +37,7 @@ public class GraceExtensionServiceImpl implements GraceExtensionService {
     private final SubscriptionRepository subscriptionRepository;
     private final GraceExtensionRepository graceExtensionRepository;
     private final MemberAccessService memberAccessService;
+    private final GraceExtensionResponseMapper graceExtensionResponseMapper;
 
     @Override
     @Transactional
@@ -114,6 +120,25 @@ public class GraceExtensionServiceImpl implements GraceExtensionService {
         }
 
         return null;
+
+    }
+
+    @Override
+    public List<GraceExtensonResponseDTO> extendedList() {
+
+        List<GraceExtensonResponseDTO> list = new ArrayList<>();
+        List<GraceExtension> listGraceExtended = graceExtensionRepository.findAll();
+
+        for (GraceExtension graceExtend : listGraceExtended) {
+
+            Subscription subscription = graceExtend.getSubscription();
+            Member member = subscription.getMember();
+
+            list.add(graceExtensionResponseMapper.toDto(graceExtend, subscription, member));
+
+        }
+
+        return list;
 
     }
 

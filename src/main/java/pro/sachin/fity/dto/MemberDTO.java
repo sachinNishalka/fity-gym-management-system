@@ -3,18 +3,10 @@ package pro.sachin.fity.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
-import pro.sachin.fity.model.AccessStatus;
-import pro.sachin.fity.model.MemberAccess;
 import pro.sachin.fity.model.MemberStatus;
 
 @Data
@@ -26,14 +18,18 @@ public class MemberDTO {
 
     private String lastName;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     private String phoneNumber;
 
     private String email;
 
+    // Read-only field - automatically set by server during registration
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime joinedDate;
 
+    // Read-only field - automatically set by server (should not be in request)
     private MemberStatus status;
 
     private String gender;
