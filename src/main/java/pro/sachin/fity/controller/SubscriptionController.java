@@ -3,7 +3,10 @@ package pro.sachin.fity.controller;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pro.sachin.fity.dto.MemberDetailsDTO;
 import pro.sachin.fity.dto.RenewalRequestDTO;
 import pro.sachin.fity.dto.SubscriptionDTO;
+import pro.sachin.fity.mapper.SubscriptionMapper;
 import pro.sachin.fity.model.Family;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.model.Plan;
@@ -28,7 +32,9 @@ import pro.sachin.fity.model.SubscriptionStatus;
 import pro.sachin.fity.repository.FamilyRepository;
 import pro.sachin.fity.repository.MemberRepository;
 import pro.sachin.fity.repository.PlanRepository;
+import pro.sachin.fity.repository.SubscriptionRepository;
 import pro.sachin.fity.sercives.SubscriptionService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @RestController
@@ -38,6 +44,12 @@ import pro.sachin.fity.sercives.SubscriptionService;
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
+
+    // added for testing
+
+    private final SubscriptionRepository subscriptionRepository;
+
+    private final SubscriptionMapper subscriptionMapper;
 
     @PostMapping("/subscribe")
     ResponseEntity<SubscriptionDTO> subscribe(
@@ -217,4 +229,26 @@ public class SubscriptionController {
         List<SubscriptionDTO> renewalSubscriptionsList = subscriptionService.getRenewalSubscriptionsList();
         return new ResponseEntity<List<SubscriptionDTO>>(renewalSubscriptionsList, HttpStatus.OK);
     }
+
+    @GetMapping("/test")
+    public List<SubscriptionDTO> getMethodName() {
+
+        List<SubscriptionDTO> subscriptionDTOList = new ArrayList<>();
+
+        List<SubscriptionStatus> subsriptionList = new ArrayList<>();
+
+        subsriptionList.add(SubscriptionStatus.ACTIVE);
+        subsriptionList.add(SubscriptionStatus.DUE);
+
+        List<Subscription> list = subscriptionRepository.findByEndDateBeforeAndStatusIn(LocalDate.now(),
+                subsriptionList);
+
+        for (Subscription subscription : list) {
+            SubscriptionDTO subscriptionDTO = subscriptionMapper.toDto(subscription);
+            subscriptionDTOList.add(subscriptionDTO);
+        }
+
+        return subscriptionDTOList;
+    }
+
 }
