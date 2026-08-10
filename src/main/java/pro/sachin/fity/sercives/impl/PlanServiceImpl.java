@@ -1,6 +1,5 @@
 package pro.sachin.fity.sercives.impl;
 
-
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -17,6 +16,7 @@ import pro.sachin.fity.sercives.PlanService;
 @Service
 public class PlanServiceImpl implements PlanService {
     private final PlanRepository planRepository;
+
     @Override
     public void createPlan(PlanDTO planDTO) {
         Plan plan = new Plan();
@@ -30,17 +30,22 @@ public class PlanServiceImpl implements PlanService {
         plan.setActive(true);
         planRepository.save(plan);
     }
+
     @Override
     public List<Plan> getAllPlans() {
-       return planRepository.findAll();
+        return planRepository.findAll();
     }
+
     @Override
     public Plan getPlanById(Long id) {
-        return planRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("There is no plan with id "+ id));          
+        return planRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("There is no plan with id " + id));
     }
+
     @Override
     public Plan updatePlan(Long id, PlanDTO planDTO) {
-        Plan existingPlan = planRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("There is no plan with id "+ id));          
+        Plan existingPlan = planRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("There is no plan with id " + id));
         existingPlan.setName(planDTO.getName());
         existingPlan.setPlanType(planDTO.getPlanType());
         existingPlan.setPrice(planDTO.getPrice());
@@ -50,10 +55,10 @@ public class PlanServiceImpl implements PlanService {
         existingPlan.setMaximumFamilyMembers(planDTO.getMaximumFamilyMembers());
         return planRepository.save(existingPlan);
     }
+
     @Override
     public void deletePlan(Long id) {
         planRepository.deleteById(id);
     }
 
-    
 }

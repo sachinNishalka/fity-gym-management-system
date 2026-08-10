@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pro.sachin.fity.model.Subscription;
 import pro.sachin.fity.model.SubscriptionStatus;
@@ -17,6 +18,11 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
         // this if for subscriptions that are passed end date and still active
         List<Subscription> findByEndDateBeforeAndStatus(LocalDate endDate, SubscriptionStatus status);
+
+        // this is for subscriptions that are passed end date and still active, and due
+        @Query("select s from Subscription s where s.endDate < :endDate and s.status in :statusList")
+        List<Subscription> findByEndDateBeforeAndStatusIn(@Param("endDate") LocalDate endDate,
+                        @Param("statusList") List<SubscriptionStatus> statusList);
 
         // this if for subscriptions that are passed grace end date and still in grace
         // period

@@ -2,6 +2,7 @@ package pro.sachin.fity.scheduler;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -55,19 +56,26 @@ public class SubscriptionStatusScheduler {
 
         LocalDate today = LocalDate.now();
         log.info("Updating subscription statuses for today: {}", today);
-        moveToGracePeriod(today);
-
-        blockExpiredSubscriptions(today);
 
         activatePaidRenewals();
 
         moveToDueStatus(today);
 
+        moveToGracePeriod(today);
+
+        blockExpiredSubscriptions(today);
+
     }
 
     public void moveToGracePeriod(LocalDate today) {
-        List<Subscription> subscriptions = subscriptionRepository.findByEndDateBeforeAndStatus(today,
-                SubscriptionStatus.ACTIVE);
+
+        List<SubscriptionStatus> subsriptionList = new ArrayList<>();
+
+        subsriptionList.add(SubscriptionStatus.ACTIVE);
+        subsriptionList.add(SubscriptionStatus.DUE);
+
+        List<Subscription> subscriptions = subscriptionRepository.findByEndDateBeforeAndStatusIn(today,
+                subsriptionList);
 
         if (!subscriptions.isEmpty()) {
             subscriptions.forEach(subscription -> subscription.setStatus(SubscriptionStatus.IN_GRACE));
@@ -117,8 +125,6 @@ public class SubscriptionStatusScheduler {
 
     }
 
-    @Scheduled(cron = "0 0 2 * * *")
-    @Transactional
     public void activatePaidRenewals() {
         LocalDate today = LocalDate.now();
 
@@ -182,25 +188,29 @@ public class SubscriptionStatusScheduler {
         if (renewalSubscription.getMember() != null) {
             // Find the old active subscription for this member
             Optional<Subscription> oldSubscription = subscriptionRepository
-                .findByMemberIdAndStatusIn(renewalSubscription.getMember().getId(), 
-                    Arrays.asList(SubscriptionStatus.ACTIVE, SubscriptionStatus.DUE, SubscriptionStatus.IN_GRACE));
-            
+                    .findByMemberIdAndStatusIn(renewalSubscription.getMember().getId(),
+                            Arrays.asList(SubscriptionStatus.ACTIVE, SubscriptionStatus.DUE,
+                                    SubscriptionStatus.IN_GRACE));
+
             if (oldSubscription.isPresent() && !oldSubscription.get().getId().equals(renewalSubscription.getId())) {
                 oldSubscription.get().setStatus(SubscriptionStatus.ENDED);
                 subscriptionRepository.save(oldSubscription.get());
-                log.info("Ended old subscription {} for member {}", oldSubscription.get().getId(), renewalSubscription.getMember().getId());
+                log.info("Ended old subscription {} for member {}", oldSubscription.get().getId(),
+                        renewalSubscription.getMember().getId());
             }
-            
+
         } else if (renewalSubscription.getFamily() != null) {
             // Find the old active subscription for this family
             Optional<Subscription> oldSubscription = subscriptionRepository
-                .findByFamilyIdAndStatusIn(renewalSubscription.getFamily().getId(), 
-                    Arrays.asList(SubscriptionStatus.ACTIVE, SubscriptionStatus.DUE, SubscriptionStatus.IN_GRACE));
-            
+                    .findByFamilyIdAndStatusIn(renewalSubscription.getFamily().getId(),
+                            Arrays.asList(SubscriptionStatus.ACTIVE, SubscriptionStatus.DUE,
+                                    SubscriptionStatus.IN_GRACE));
+
             if (oldSubscription.isPresent() && !oldSubscription.get().getId().equals(renewalSubscription.getId())) {
                 oldSubscription.get().setStatus(SubscriptionStatus.ENDED);
                 subscriptionRepository.save(oldSubscription.get());
-                log.info("Ended old subscription {} for family {}", oldSubscription.get().getId(), renewalSubscription.getFamily().getId());
+                log.info("Ended old subscription {} for family {}", oldSubscription.get().getId(),
+                        renewalSubscription.getFamily().getId());
             }
         }
     }
