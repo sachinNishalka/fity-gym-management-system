@@ -97,11 +97,12 @@ public class MemberAccessImpl implements MemberAccessService {
       Long memberId = member.getId();
 
       // Case 1: member has their own ACTIVE individual subscription
-      Subscription activeSub = subscriptionRepository
-          .findByMemberIdAndStatus(memberId, SubscriptionStatus.ACTIVE);
+      Optional<Subscription> activeSubOpt = subscriptionRepository
+          .findFirstByMemberIdAndStatusInOrderByCreatedAtDesc(
+              memberId, List.of(SubscriptionStatus.ACTIVE));
 
-      if (activeSub != null) {
-        updateMemberAccess(memberId, activeSub.getGraceEndDate(),
+      if (activeSubOpt.isPresent()) {
+        updateMemberAccess(memberId, activeSubOpt.get().getGraceEndDate(),
             AccessStatus.ALLOWED,
             "Access restored - incorrectly blocked by scheduler");
         recovered.add(member.getMemberCode() + " (" + member.getFirstName() + ")");
