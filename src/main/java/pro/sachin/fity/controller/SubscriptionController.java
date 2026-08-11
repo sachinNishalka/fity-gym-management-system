@@ -251,4 +251,11 @@ public class SubscriptionController {
         return subscriptionDTOList;
     }
 
+    @PostMapping("/renewal/custom")
+    public ResponseEntity<Subscription> createRenewalSubscriptionCustomDate(
+            @RequestBody RenewalRequestDTO renewalRequestDTO) {
+        Subscription subscription = subscriptionService.createRenewalSubscriptionCustomDate(renewalRequestDTO);
+        return new ResponseEntity<Subscription>(subscription, HttpStatus.OK);
+    }
+
 }

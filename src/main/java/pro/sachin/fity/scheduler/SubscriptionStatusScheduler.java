@@ -132,6 +132,7 @@ public class SubscriptionStatusScheduler {
                 .findByStatusAndStartDateBefore(SubscriptionStatus.PENDING_RENEWAL, today.plusDays(1));
 
         for (Subscription renewal : pendingRenewals) {
+
             if (isSubscriptionFullyPaid(renewal.getId())) {
 
                 // setting the subscription status to active

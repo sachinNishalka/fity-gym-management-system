@@ -126,4 +126,6 @@ public interface SubscriptionService {
 
     List<SubscriptionDTO> getRenewalSubscriptionsList();
 
+    Subscription createRenewalSubscriptionCustomDate(RenewalRequestDTO renewalRequestDTO);
+
 }

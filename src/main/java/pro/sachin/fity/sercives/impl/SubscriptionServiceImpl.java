@@ -682,6 +682,88 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return renewalSubscriptionsList;
     }
 
+    @Override
+    public Subscription createRenewalSubscriptionCustomDate(RenewalRequestDTO renewalRequestDTO) {
+        // TODO Auto-generated method stub
+
+        // get the current subscription
+
+        Subscription currenSubscription = subscriptionRepository.findById(renewalRequestDTO.getCurrentSubscriptionId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Cannot find an existing subscription to the given id, please check (Subscription Service impl) "));
+
+        // check that subscription is active or in grace, because then only it can be
+        // renewed
+        // this now checks for due susbcriptions too
+
+        if (currenSubscription.getStatus() != SubscriptionStatus.ACTIVE
+                && currenSubscription.getStatus() != SubscriptionStatus.IN_GRACE
+                && currenSubscription.getStatus() != SubscriptionStatus.DUE) {
+            throw new IllegalStateException("This subscription cannot be renewed " + currenSubscription.getStatus()
+                    + ". Only ACTIVE or IN_GRACE or DUE subscriptions can be renewed!"
+                    + "Please pay the outstanding balance first");
+        }
+
+        // checking if there is a renewal subscription already created
+
+        // changed the subscription status to renewal subscription
+        if (currenSubscription.getMember() != null) {
+            if (subscriptionRepository.existsByMemberIdAndStatus(currenSubscription.getMember().getId(),
+                    // here i m planning to chnage this to some other state becuas we are using the
+                    // same in the membre registration subscription too
+                    SubscriptionStatus.PENDING_RENEWAL)) {
+                throw new IllegalStateException(
+                        "A renewal subscription already exist. Please pay for it or cancel the subscription");
+            }
+        } else if (currenSubscription.getFamily() != null) {
+            // here also planning to change the subscription status to something else
+            if (subscriptionRepository.existsByFamilyIdAndStatus(currenSubscription.getFamily().getId(),
+                    SubscriptionStatus.PENDING_RENEWAL)) {
+                throw new IllegalStateException("A renewal subscription already exist for this family");
+            }
+        }
+
+        // getting the plan for subscribe
+        Plan plan = planRepository.findById(renewalRequestDTO.getPlanId())
+                .orElseThrow(() -> new EntityNotFoundException("Plan not found"));
+
+        // make new subscription
+        Subscription renewalSubscription = new Subscription();
+
+        // adding the member or the family to the newly created subscription
+
+        if (currenSubscription.getMember() != null) {
+            renewalSubscription.setMember(currenSubscription.getMember());
+        } else if (currenSubscription.getFamily() != null) {
+            renewalSubscription.setFamily(currenSubscription.getFamily());
+        }
+
+        // setting the plan (this is not the existed plan (could be most of the time) or
+        // new plan)
+        renewalSubscription.setPlan(plan);
+
+        LocalDate startDate = renewalRequestDTO.getStartDate() != null ? renewalRequestDTO.getStartDate()
+                : currenSubscription.getEndDate().plusDays(1); // Always use planned start date
+        long borrowedDays = calculateConsumedDays(currenSubscription);
+        LocalDate endDate = calculateFairRenewalEndDate(startDate, plan, borrowedDays);
+        LocalDate dueDate = calculateDueDate(endDate);
+        LocalDate graceEndDate = calculateGraceEndDate(endDate);
+
+        // for now its keeping the pending, but have to change for something that can
+        // filter out the renewal subscriptions directly
+        renewalSubscription = renewalSubscription.toBuilder().startDate(startDate).endDate(endDate).dueDate(dueDate)
+                .graceEndDate(graceEndDate)
+                .status(SubscriptionStatus.PENDING_RENEWAL).build();
+
+        Subscription savedRenewalSubscription = subscriptionRepository.save(renewalSubscription);
+
+        // creating the subscription charges for the renewal subscription
+
+        createSubscriptionCharges(savedRenewalSubscription, renewalRequestDTO.getDiscountAmount());
+
+        return savedRenewalSubscription;
+    }
+
     // here grace extension by corch
     // manual overwritten of member access by admin
 
