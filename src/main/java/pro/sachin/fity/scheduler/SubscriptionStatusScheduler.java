@@ -95,34 +95,83 @@ public class SubscriptionStatusScheduler {
         log.info("Moved to due status {} ", subscriptions.size());
     }
 
+    // public void blockExpiredSubscriptions(LocalDate today) {
+    //     List<Subscription> subscriptions = subscriptionRepository.findByGraceEndDateBeforeAndStatus(today,
+    //             SubscriptionStatus.IN_GRACE);
+
+    //     if (!subscriptions.isEmpty()) {
+    //         subscriptions.forEach(subscription -> {
+    //             subscription.setStatus(SubscriptionStatus.BLOCKED);
+
+    //             if (subscription.getMember() != null) {
+    //                 memberAccessService.updateMemberAccess(subscription.getMember().getId(), today,
+    //                         AccessStatus.BLOCKED, "Grace period expired");
+    //             } else if (subscription.getFamily() != null) {
+    //                 // TODO: this family subscription should be blocked
+
+    //                 Family family = subscription.getFamily();
+
+    //                 for (Member member : family.getMembers()) {
+    //                     memberAccessService.updateMemberAccess(member.getId(), today, AccessStatus.BLOCKED,
+    //                             "Family subscription expired!");
+    //                     log.info("Blocked access for {} in family {}", member.getFirstName(), family.getFamilyName());
+    //                 }
+
+    //             }
+    //         });
+    //     }
+    //     subscriptionRepository.saveAll(subscriptions);
+    //     log.info("Blocked expired subscriptions {} ", subscriptions.size());
+
+    // }
+
     public void blockExpiredSubscriptions(LocalDate today) {
         List<Subscription> subscriptions = subscriptionRepository.findByGraceEndDateBeforeAndStatus(today,
                 SubscriptionStatus.IN_GRACE);
-
+    
         if (!subscriptions.isEmpty()) {
             subscriptions.forEach(subscription -> {
-                subscription.setStatus(SubscriptionStatus.BLOCKED);
-
+    
                 if (subscription.getMember() != null) {
-                    memberAccessService.updateMemberAccess(subscription.getMember().getId(), today,
-                            AccessStatus.BLOCKED, "Grace period expired");
-                } else if (subscription.getFamily() != null) {
-                    // TODO: this family subscription should be blocked
-
-                    Family family = subscription.getFamily();
-
-                    for (Member member : family.getMembers()) {
-                        memberAccessService.updateMemberAccess(member.getId(), today, AccessStatus.BLOCKED,
-                                "Family subscription expired!");
-                        log.info("Blocked access for {} in family {}", member.getFirstName(), family.getFamilyName());
+    
+                    boolean hasActiveSubscription = subscriptionRepository
+                            .existsByMemberIdAndStatus(subscription.getMember().getId(), SubscriptionStatus.ACTIVE);
+    
+                    if (hasActiveSubscription) {
+                        // Member already has a valid active subscription.
+                        // Just mark this old one as ENDED — do NOT touch device access.
+                        subscription.setStatus(SubscriptionStatus.ENDED);
+                        log.info("Skipped blocking member {} — has an active subscription. Old sub {} marked ENDED.",
+                                subscription.getMember().getId(), subscription.getId());
+                    } else {
+                        subscription.setStatus(SubscriptionStatus.BLOCKED);
+                        memberAccessService.updateMemberAccess(subscription.getMember().getId(), today,
+                                AccessStatus.BLOCKED, "Grace period expired");
                     }
-
+    
+                } else if (subscription.getFamily() != null) {
+    
+                    Family family = subscription.getFamily();
+                    boolean hasActiveSubscription = subscriptionRepository
+                            .existsByFamilyIdAndStatus(family.getId(), SubscriptionStatus.ACTIVE);
+    
+                    if (hasActiveSubscription) {
+                        subscription.setStatus(SubscriptionStatus.ENDED);
+                        log.info("Skipped blocking family {} — has an active subscription. Old sub {} marked ENDED.",
+                                family.getId(), subscription.getId());
+                    } else {
+                        subscription.setStatus(SubscriptionStatus.BLOCKED);
+                        for (Member member : family.getMembers()) {
+                            memberAccessService.updateMemberAccess(member.getId(), today, AccessStatus.BLOCKED,
+                                    "Family subscription expired!");
+                            log.info("Blocked access for {} in family {}", member.getFirstName(), family.getFamilyName());
+                        }
+                    }
                 }
             });
         }
         subscriptionRepository.saveAll(subscriptions);
         log.info("Blocked expired subscriptions {} ", subscriptions.size());
-
     }
 
     public void activatePaidRenewals() {

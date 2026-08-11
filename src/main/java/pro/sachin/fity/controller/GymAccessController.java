@@ -10,11 +10,14 @@ import pro.sachin.fity.model.MemberAccess;
 import pro.sachin.fity.sercives.MemberAccessService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
@@ -42,6 +45,20 @@ public class GymAccessController {
       }
 
       return ResponseEntity.ok(list);
+   }
+
+   @PostMapping("/recover-blocked-access")
+   public ResponseEntity<Map<String, Object>> recoverBlockedAccess() {
+      List<String> recoveredMembers = memberAccessService.recoverIncorrectlyBlockedMembers();
+
+      Map<String, Object> response = new HashMap<>();
+      response.put("recoveredCount", recoveredMembers.size());
+      response.put("recoveredMembers", recoveredMembers);
+      response.put("message", recoveredMembers.isEmpty()
+            ? "No incorrectly blocked members found"
+            : "Access restored. Device commands queued for " + recoveredMembers.size() + " member(s).");
+
+      return ResponseEntity.ok(response);
    }
 
 }
