@@ -344,7 +344,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
 
         // Subtract borrowed days from the plan duration
-        LocalDate adjustedEndDate = normalEndDate.minusDays(borrowedDays);
+        LocalDate adjustedEndDate = normalEndDate;
 
         // Calculate effective duration after adjustment
         long effectiveDuration = java.time.temporal.ChronoUnit.DAYS.between(startDate, adjustedEndDate);
