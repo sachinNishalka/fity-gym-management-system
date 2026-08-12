@@ -235,7 +235,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         if (currenSubscription.getStatus() != SubscriptionStatus.ACTIVE
                 && currenSubscription.getStatus() != SubscriptionStatus.IN_GRACE
-                && currenSubscription.getStatus() != SubscriptionStatus.DUE) {
+                && currenSubscription.getStatus() != SubscriptionStatus.DUE && currenSubscription.getStatus() != SubscriptionStatus.BLOCKED) {
             throw new IllegalStateException("This subscription cannot be renewed " + currenSubscription.getStatus()
                     + ". Only ACTIVE or IN_GRACE or DUE subscriptions can be renewed!"
                     + "Please pay the outstanding balance first");
