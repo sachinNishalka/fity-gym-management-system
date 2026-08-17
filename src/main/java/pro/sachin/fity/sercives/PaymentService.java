@@ -19,6 +19,8 @@ public interface PaymentService {
     // TODO: Use @Transactional to ensure atomic updates
     void savePayment(PaymentDTO paymentDTO);
 
+    List<PaymentDTO> getAllPayments();
+
     List<PartiallyPaidSubscriptionDTO> getPartiallyPaidSubscriptions();
 
     List<Subscription> paymentsForToday();

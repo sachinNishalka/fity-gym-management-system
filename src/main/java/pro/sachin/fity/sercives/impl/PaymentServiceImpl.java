@@ -62,6 +62,31 @@ public class PaymentServiceImpl implements PaymentService {
 
     }
 
+    @Override
+    @Transactional
+    public List<PaymentDTO> getAllPayments() {
+        return paymentRepository.findAllByOrderByPaidOnDesc().stream()
+                .map(this::toPaymentDto)
+                .toList();
+    }
+
+    private PaymentDTO toPaymentDto(Payments payment) {
+        PaymentDTO dto = new PaymentDTO();
+        Subscription subscription = payment.getSubscription();
+
+        dto.setSubscriptionId(subscription.getId());
+        dto.setSubscriptionName(subscription.getPlan() != null ? subscription.getPlan().getName() : null);
+        dto.setMemberName(subscription.getMember() != null
+                ? subscription.getMember().getFirstName() + " " + subscription.getMember().getLastName()
+                : subscription.getFamily() != null ? subscription.getFamily().getFamilyName() : null);
+        dto.setAmount(payment.getAmount());
+        dto.setRecieptNo(payment.getReceiptNo());
+        dto.setNote(payment.getNote());
+        dto.setPaidOn(payment.getPaidOn());
+
+        return dto;
+    }
+
     private void processPostPayment(Long subscriptionId) {
         boolean isFullyPaid = checkIfSubscriptionIsFullyPaid(subscriptionId);
         if (isFullyPaid) {

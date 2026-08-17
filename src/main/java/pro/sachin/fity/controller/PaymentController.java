@@ -46,6 +46,11 @@ public class PaymentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(paymentDTO);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<PaymentDTO>> getAllPayments() {
+        return ResponseEntity.ok(paymentService.getAllPayments());
+    }
+
     @GetMapping("/partially-paid-subscriptions")
     public ResponseEntity<List<PartiallyPaidSubscriptionDTO>> getPartiallyPaidSubscriptions() {
         List<PartiallyPaidSubscriptionDTO> subscriptions = paymentService.getPartiallyPaidSubscriptions();
