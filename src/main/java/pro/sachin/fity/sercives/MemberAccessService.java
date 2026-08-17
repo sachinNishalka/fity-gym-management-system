@@ -12,4 +12,6 @@ public interface MemberAccessService {
     void updateMemberAccess(Long memberId, LocalDate allowedUntil, AccessStatus accessStatus, String reason);
 
     List<MemberAccess> getAllMemberAccess();
+
+    List<String> recoverIncorrectlyBlockedMembers();
 }

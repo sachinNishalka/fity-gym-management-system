@@ -16,4 +16,7 @@ public interface MemberAccessRepository extends JpaRepository<MemberAccess, Long
                 JOIN FETCH ma.member
             """)
     List<MemberAccess> findAllWithSubscriptionAndMember();
+
+    @Query("SELECT ma FROM MemberAccess ma JOIN FETCH ma.member m WHERE ma.accessStatus = 'BLOCKED'")
+    List<MemberAccess> findAllBlockedAccess();
 }
