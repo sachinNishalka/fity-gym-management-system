@@ -2,6 +2,7 @@ package pro.sachin.fity.sercives.impl;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -38,16 +39,34 @@ public class FamilyServiceImpl implements FamilyService {
     @Transactional
     @Override
     public Family createFamily(FamilyDTO familyDTO) {
+        if (familyDTO == null || familyDTO.getFamilyName() == null || familyDTO.getFamilyName().isBlank()) {
+            throw new IllegalArgumentException("Family name is required.");
+        }
+        if (familyDTO.getMemberIds() == null || familyDTO.getMemberIds().isEmpty()) {
+            throw new IllegalArgumentException("Add at least one member to the family.");
+        }
+
+        List<Long> memberIds = familyDTO.getMemberIds().stream().distinct().toList();
+        if (memberIds.stream().anyMatch(memberId -> memberId == null)) {
+            throw new IllegalArgumentException("Every family member must have a valid ID.");
+        }
+
+        List<Member> members = memberRepository.findAllById(memberIds);
+        if (members.size() != memberIds.size()) {
+            throw new EntityNotFoundException("One or more selected members were not found.");
+        }
+        if (members.stream().anyMatch(member -> member.getFamily() != null)) {
+            throw new IllegalArgumentException("One or more selected members already belong to a family.");
+        }
+
         Family family = new Family();
-        family.setFamilyName(familyDTO.getFamilyName());
+        family.setFamilyName(familyDTO.getFamilyName().trim());
+        // Keep both sides of the relationship in sync. Member owns the foreign
+        // key, while Family is needed immediately for a correct API response.
+        family.setMembers(new HashSet<>(members));
         Family savedFamily = familyRepository.save(family);
 
-        // assign members
-
-        for (Long memberId : familyDTO.getMemberIds()) {
-            // finding the member infromation
-            Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException(
-                    "The member you are looking for is not registered yet (error occured while creating family and assingning)"));
+        for (Member member : members) {
             member.setFamily(savedFamily);
             memberRepository.save(member);
         }

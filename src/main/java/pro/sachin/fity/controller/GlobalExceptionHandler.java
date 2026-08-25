@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import jakarta.persistence.EntityNotFoundException;
 import pro.sachin.fity.exception.BusinessExceptionHandler;
 
 @RestControllerAdvice
@@ -12,6 +13,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessExceptionHandler.class)
     ResponseEntity<?> businessExceptionHandler(BusinessExceptionHandler ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler({ IllegalArgumentException.class, EntityNotFoundException.class })
+    ResponseEntity<?> invalidRequestHandler(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

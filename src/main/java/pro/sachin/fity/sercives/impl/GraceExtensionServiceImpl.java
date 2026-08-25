@@ -16,14 +16,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import pro.sachin.fity.dto.GraceExtensionDTO;
 import pro.sachin.fity.dto.GraceExtensonResponseDTO;
-import pro.sachin.fity.exception.NotInGracePeriodException;
 import pro.sachin.fity.mapper.GraceExtensionResponseMapper;
 import pro.sachin.fity.model.AccessStatus;
 import pro.sachin.fity.model.GraceExtension;
 import pro.sachin.fity.model.Member;
 import pro.sachin.fity.model.Subscription;
 import pro.sachin.fity.model.SubscriptionStatus;
-import pro.sachin.fity.model.User;
 import pro.sachin.fity.repository.GraceExtensionRepository;
 import pro.sachin.fity.repository.SubscriptionRepository;
 import pro.sachin.fity.sercives.GraceExtensionService;
@@ -47,19 +45,18 @@ public class GraceExtensionServiceImpl implements GraceExtensionService {
         Subscription subscription = subscriptionRepository.findById(subscriptionId).orElseThrow(
                 () -> new EntityNotFoundException("Subscription is not found for grace period extenstion!"));
 
-        if (subscription.getStatus() != SubscriptionStatus.IN_GRACE) {
-            throw new NotInGracePeriodException("can only extend grace for IN_GRACE subscriptions");
+        if (subscription.getStatus() == SubscriptionStatus.ENDED) {
+            throw new IllegalStateException("Grace period cannot be granted to an ended subscription.");
         }
 
-        // for now we are manually setting this, i m planning ot implement it later
-        User extendedBy = new User();
-        extendedBy.setName("sachin");
-
         LocalDate oldGraceEndDate = subscription.getGraceEndDate();
+        if (oldGraceEndDate == null) {
+            oldGraceEndDate = LocalDate.now();
+        }
 
         // checking extension date is after tje previous date
 
-        if (!newGraceEndDate.isAfter(oldGraceEndDate)) {
+        if (newGraceEndDate == null || !newGraceEndDate.isAfter(oldGraceEndDate)) {
             throw new IllegalArgumentException("New grace date must be after current grace date!");
         }
 
@@ -83,7 +80,6 @@ public class GraceExtensionServiceImpl implements GraceExtensionService {
 
         extension.setSubscription(subscription);
 
-        extension.setExtendedByUser(extendedBy);
         extension.setOldGraceEndDate(oldGraceEndDate);
         extension.setNewGraceEndDate(newGraceEndDate);
         extension.setReason(reason);
@@ -93,6 +89,7 @@ public class GraceExtensionServiceImpl implements GraceExtensionService {
         // change the grace end date for the subscription
 
         subscription.setGraceEndDate(savedExtension.getNewGraceEndDate());
+        subscription.setStatus(SubscriptionStatus.IN_GRACE);
         subscriptionRepository.save(subscription);
 
         // change the door access (extending door access)

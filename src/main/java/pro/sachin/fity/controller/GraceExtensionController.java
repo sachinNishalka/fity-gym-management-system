@@ -29,8 +29,7 @@ public class GraceExtensionController {
 
     @PostMapping("/extend")
     ResponseEntity<?> extendGrace(@RequestBody GraceExtensionDTO graceExtensionDTO) {
-        ResponseEntity<?> graceExtension = graceExtensionService.extend(graceExtensionDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(graceExtension);
+        return graceExtensionService.extend(graceExtensionDTO);
     }
 
     @GetMapping("/all")

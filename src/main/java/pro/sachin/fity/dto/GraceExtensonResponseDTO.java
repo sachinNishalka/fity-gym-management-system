@@ -12,6 +12,8 @@ public class GraceExtensonResponseDTO {
 
     private Long id;
     private Long subscriptionId;
+    private Long memberId;
+    private String memberCode;
     private LocalDate oldGraceEndDate;
     private LocalDate newGraceEndDate;
     private String reason;
