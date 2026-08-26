@@ -133,9 +133,18 @@ public class SubscriptionStatusScheduler {
             subscriptions.forEach(subscription -> {
     
                 if (subscription.getMember() != null) {
+
+
+                    List<SubscriptionStatus> coveringStatuses = List.of(
+                        SubscriptionStatus.ACTIVE,
+                        SubscriptionStatus.DUE,
+                        SubscriptionStatus.IN_GRACE);
     
-                    boolean hasActiveSubscription = subscriptionRepository
-                            .existsByMemberIdAndStatus(subscription.getMember().getId(), SubscriptionStatus.ACTIVE);
+                        boolean hasActiveSubscription = subscriptionRepository
+                        .existsByMemberIdAndStatusIn(
+                                subscription.getMember().getId(),
+                                coveringStatuses);
+                
     
                     if (hasActiveSubscription) {
                         // Member already has a valid active subscription.

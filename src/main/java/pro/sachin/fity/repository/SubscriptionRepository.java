@@ -100,4 +100,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
                         ")")
         List<Subscription> findRenwalSubscriptionList();
 
+        boolean existsByMemberIdAndStatusIn(Long memberId, List<SubscriptionStatus> statuses);
+
+        boolean existsByFamilyIdAndStatusIn(Long familyId, List<SubscriptionStatus> statuses);
+
 }
