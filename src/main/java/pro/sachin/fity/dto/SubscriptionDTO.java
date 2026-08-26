@@ -38,6 +38,7 @@ public class SubscriptionDTO {
 
     // TODO: REQUEST - Optional, defaults to today if not provided
     private LocalDate startDate;
+//    2024-05-02
 
     // TODO: CRITICAL - Should NEVER be in request - auto-calculated from startDate
     // + plan.durationDays
