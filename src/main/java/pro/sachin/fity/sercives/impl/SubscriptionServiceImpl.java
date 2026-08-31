@@ -674,7 +674,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                         renewSubscription.getSubscriptionCharges().getDiscountAmount());
             }
 
-            subscriptionDTO.setMemberCode(renewSubscription.getMember().getMemberCode());
+
+            if(renewSubscription.getMember() != null) {
+                if(renewSubscription.getMember().getMemberCode() != null) {
+                    subscriptionDTO.setMemberCode(renewSubscription.getMember().getMemberCode());
+                } else {
+                    subscriptionDTO.setMemberCode(null);
+                }
+            }
 
             renewalSubscriptionsList.add(subscriptionDTO);
         }
