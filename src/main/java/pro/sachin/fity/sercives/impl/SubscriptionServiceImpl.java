@@ -235,7 +235,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         if (currenSubscription.getStatus() != SubscriptionStatus.ACTIVE
                 && currenSubscription.getStatus() != SubscriptionStatus.IN_GRACE
-                && currenSubscription.getStatus() != SubscriptionStatus.DUE && currenSubscription.getStatus() != SubscriptionStatus.BLOCKED) {
+                && currenSubscription.getStatus() != SubscriptionStatus.DUE
+                && currenSubscription.getStatus() != SubscriptionStatus.BLOCKED) {
             throw new IllegalStateException("This subscription cannot be renewed " + currenSubscription.getStatus()
                     + ". Only ACTIVE or IN_GRACE or DUE subscriptions can be renewed!"
                     + "Please pay the outstanding balance first");
@@ -596,6 +597,38 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public List<Subscription> getAllSubscriptions() {
         List<Subscription> allSubscriptions = subscriptionRepository.findAll();
         return allSubscriptions;
+    }
+
+    @Override
+    @Transactional
+    public List<SubscriptionDTO> getSubscriptionsInGrace() {
+        return subscriptionRepository.findByStatus(SubscriptionStatus.IN_GRACE).stream()
+                .map(this::toSubscriptionDto)
+                .toList();
+    }
+
+    private SubscriptionDTO toSubscriptionDto(Subscription subscription) {
+        SubscriptionDTO dto = subscriptionMapper.toDto(subscription);
+        dto.setId(subscription.getId());
+
+        if (subscription.getMember() != null) {
+            Member member = subscription.getMember();
+            dto.setMemberId(member.getId());
+            dto.setMemberName(member.getFirstName() + " " + member.getLastName());
+            dto.setMemberCode(member.getMemberCode());
+        }
+        if (subscription.getFamily() != null) {
+            dto.setFamilyId(subscription.getFamily().getId());
+            dto.setFamilyName(subscription.getFamily().getFamilyName());
+        }
+        if (subscription.getPlan() != null) {
+            dto.setPlanId(subscription.getPlan().getId());
+            dto.setPlanName(subscription.getPlan().getName());
+        }
+        if (subscription.getSubscriptionCharges() != null) {
+            dto.setDiscountAmount(subscription.getSubscriptionCharges().getDiscountAmount());
+        }
+        return dto;
     }
 
     @Override

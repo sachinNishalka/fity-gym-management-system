@@ -41,13 +41,29 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public void savePayment(PaymentDTO paymentDTO) {
+        if (paymentDTO == null || paymentDTO.getSubscriptionId() == null) {
+            throw new IllegalArgumentException("Subscription id is required.");
+        }
+        if (paymentDTO.getAmount() == null || paymentDTO.getAmount().signum() <= 0) {
+            throw new IllegalArgumentException("Payment amount must be greater than zero.");
+        }
 
         final Payments payments = new Payments();
 
-        if (paymentDTO.getSubscriptionId() != null) {
-            Subscription subscription = subscriptionRepository.findById(paymentDTO.getSubscriptionId())
-                    .orElseThrow(() -> new EntityNotFoundException("Subscription is not found"));
-            payments.setSubscription(subscription);
+        Subscription subscription = subscriptionRepository.findById(paymentDTO.getSubscriptionId())
+                .orElseThrow(() -> new EntityNotFoundException("Subscription is not found"));
+        if (subscription.getStatus() == SubscriptionStatus.ENDED) {
+            throw new IllegalStateException("Cannot record a payment for an ended subscription.");
+        }
+        payments.setSubscription(subscription);
+
+        SubscriptionCharges charges = subscriptionChargesRepository.findBySubscriptionId(subscription.getId())
+                .orElseThrow(() -> new IllegalStateException("Subscription charges not found"));
+        BigDecimal alreadyPaid = paymentRepository.findBySubscriptionId(subscription.getId()).stream()
+                .map(Payments::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal remaining = charges.getNetAmount().subtract(alreadyPaid);
+        if (paymentDTO.getAmount().compareTo(remaining) > 0) {
+            throw new IllegalArgumentException("Payment amount exceeds the remaining balance of " + remaining + ".");
         }
 
         payments.setAmount(paymentDTO.getAmount());
@@ -197,9 +213,14 @@ public class PaymentServiceImpl implements PaymentService {
                 dto.setPaid(paidAmount);
                 dto.setBalance(balanceAmount);
 
-                dto.setMemberFirstName(subscription.getMember().getFirstName());
-                dto.setMemberLastName(subscription.getMember().getLastName());
-                dto.setMemberId(subscription.getMember().getId());
+                if (subscription.getMember() != null) {
+                    dto.setMemberFirstName(subscription.getMember().getFirstName());
+                    dto.setMemberLastName(subscription.getMember().getLastName());
+                    dto.setMemberId(subscription.getMember().getId());
+                } else if (subscription.getFamily() != null) {
+                    dto.setMemberFirstName(subscription.getFamily().getFamilyName());
+                    dto.setMemberLastName("(Family)");
+                }
 
                 dto.setPlanId(subscription.getPlan().getId());
                 dto.setPlanName(subscription.getPlan().getName());

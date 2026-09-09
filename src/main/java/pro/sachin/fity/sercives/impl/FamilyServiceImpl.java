@@ -80,6 +80,22 @@ public class FamilyServiceImpl implements FamilyService {
         Family family = familyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
                 "Requested family not found (get family by id method, family service implimentation)"));
 
+        return toResponse(family);
+    }
+
+    @Override
+    @Transactional
+    public List<FamilyResponseDTO> getAllFamilies() {
+        return familyRepository.findAll().stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    @Transactional
+    public List<MemberSummeryDTO> getFamilyMembers(Long familyId) {
+        return getFamilyById(familyId).getMembers();
+    }
+
+    private FamilyResponseDTO toResponse(Family family) {
         FamilyResponseDTO familyResponseDTO = new FamilyResponseDTO();
         familyResponseDTO.setId(family.getId());
         familyResponseDTO.setFamilyName(family.getFamilyName());
@@ -103,6 +119,7 @@ public class FamilyServiceImpl implements FamilyService {
         return familyResponseDTO;
     }
 
+    @Transactional
     @Override
     public FamilyResponseDTO addMemberToFamily(Long familyId, Long memberId) {
 
@@ -117,6 +134,10 @@ public class FamilyServiceImpl implements FamilyService {
             throw new IllegalArgumentException("Member is already part of another family.");
         }
 
+        if (member.getFamily() != null) {
+            return getFamilyById(familyId);
+        }
+
         // Add the member to the family
         member.setFamily(family);
         memberRepository.save(member);
@@ -124,6 +145,7 @@ public class FamilyServiceImpl implements FamilyService {
         return getFamilyById(familyId);
     }
 
+    @Transactional
     @Override
     public void removeMemberFromFamily(Long familyId, Long memberId) {
 
@@ -144,31 +166,35 @@ public class FamilyServiceImpl implements FamilyService {
 
     }
 
+    @Transactional
     @Override
     public FamilyResponseDTO updateFamilyName(Long familyId, String familyName) {
         Family family = familyRepository.findById(familyId).orElseThrow(() -> new EntityNotFoundException(
                 "Requested family not found (update family name method, family service implimentation)"));
 
-        // Update the family name
-        family.setFamilyName(familyName);
+        if (familyName == null || familyName.isBlank()) {
+            throw new IllegalArgumentException("Family name is required.");
+        }
+        family.setFamilyName(familyName.trim());
         familyRepository.save(family);
 
         return getFamilyById(familyId);
     }
 
+    @Transactional
     @Override
     public void deleteFamily(Long familyId) {
 
         Family family = familyRepository.findById(familyId).orElseThrow(() -> new EntityNotFoundException(
                 "Requested family not found (delete family method, family service implimentation)"));
 
-        // Check if the family has active subscriptions
-        if (!family.getMembers().isEmpty()) {
-            throw new IllegalStateException("Cannot delete family with active members.");
+        if (subscriptionRepository.existsByFamilyIdAndStatus(familyId, pro.sachin.fity.model.SubscriptionStatus.ACTIVE)
+                || subscriptionRepository.existsByFamilyIdAndStatus(familyId, pro.sachin.fity.model.SubscriptionStatus.IN_GRACE)
+                || subscriptionRepository.existsByFamilyIdAndStatus(familyId, pro.sachin.fity.model.SubscriptionStatus.PENDING)) {
+            throw new IllegalStateException("Cannot delete a family with an active or pending subscription.");
         }
 
-        // Remove all member associations
-        for (Member member : family.getMembers()) {
+        for (Member member : new HashSet<>(family.getMembers())) {
             member.setFamily(null);
             memberRepository.save(member);
         }
@@ -177,23 +203,24 @@ public class FamilyServiceImpl implements FamilyService {
         familyRepository.delete(family);
     }
 
+    @Transactional
     @Override
-    public SubscriptionDTO getAllSubscriptionsForFamily(Long familyId) {
-        Subscription subscriptions = subscriptionRepository.findByFamilyId(familyId);
-
-        if (subscriptions == null) {
-            throw new EntityNotFoundException(
-                    "No subscriptions found for the specified family (get all subscriptions for family method, family service implimentation)");
+    public List<SubscriptionDTO> getAllSubscriptionsForFamily(Long familyId) {
+        if (!familyRepository.existsById(familyId)) {
+            throw new EntityNotFoundException("Requested family was not found.");
         }
-
-        SubscriptionDTO subscriptionDTO = subscriptionMapper.toDto(subscriptions);
-
-        return subscriptionDTO;
+        return subscriptionRepository.findByFamilyIdOrderByCreatedAtDesc(familyId).stream()
+                .map(subscriptionMapper::toDto)
+                .toList();
     }
 
     @Override
     public List<PlanDTO> getEligiblePlansForFamily(Long familyId) {
+        Family family = familyRepository.findById(familyId)
+                .orElseThrow(() -> new EntityNotFoundException("Requested family was not found."));
+        int familySize = family.getMembers().size();
         List<PlanDTO> eligiblePlans = planRepository.findByPlanType(PlanType.FAMILY).stream()
+                .filter(plan -> plan.getMaximumFamilyMembers() >= familySize)
                 .map(plan -> {
                     PlanDTO planDTO = new PlanDTO();
                     planDTO.setId(plan.getId());

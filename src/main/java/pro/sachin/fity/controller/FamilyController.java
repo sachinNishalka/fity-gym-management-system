@@ -15,7 +15,7 @@ import pro.sachin.fity.dto.FamilyDTO;
 import pro.sachin.fity.dto.FamilyResponseDTO;
 import pro.sachin.fity.dto.PlanDTO;
 import pro.sachin.fity.dto.SubscriptionDTO;
-import pro.sachin.fity.model.Family;
+import pro.sachin.fity.dto.MemberSummeryDTO;
 import pro.sachin.fity.sercives.FamilyService;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,9 +35,9 @@ public class FamilyController {
     // TODO: Auto-generate createdAt timestamp in service layer
     // TODO: Return HttpStatus.CREATED (201) not OK (200)
     @PostMapping("/create")
-    ResponseEntity<Family> createFamily(@RequestBody FamilyDTO familyDTO) {
-        Family family = familyService.createFamily(familyDTO);
-        return new ResponseEntity<Family>(family, HttpStatus.OK);
+    public ResponseEntity<FamilyResponseDTO> createFamily(@RequestBody FamilyDTO familyDTO) {
+        Long familyId = familyService.createFamily(familyDTO).getId();
+        return ResponseEntity.status(HttpStatus.CREATED).body(familyService.getFamilyById(familyId));
     }
 
     // TODO: IMPLEMENT - Add member to family
@@ -46,8 +46,8 @@ public class FamilyController {
     // TODO: Validate member exists and is not already in another family
     // TODO: This requires family_members junction table implementation
 
-    @PutMapping("addmember/{id}")
-    ResponseEntity<FamilyResponseDTO> addMemberToFamily(@PathVariable("familyId") Long familyId,
+    @PostMapping("/{familyId}/members")
+    public ResponseEntity<FamilyResponseDTO> addMemberToFamily(@PathVariable Long familyId,
             @RequestParam("memberId") Long memberId) {
 
         FamilyResponseDTO updatedFamily = familyService.addMemberToFamily(familyId, memberId);
@@ -56,17 +56,34 @@ public class FamilyController {
 
     }
 
+    // Backwards-compatible route used by the existing frontend.
+    @PutMapping("addmember/{familyId}")
+    public ResponseEntity<FamilyResponseDTO> addMemberToFamilyLegacy(@PathVariable Long familyId,
+            @RequestParam("memberId") Long memberId) {
+        return ResponseEntity.ok(familyService.addMemberToFamily(familyId, memberId));
+    }
+
     // TODO: IMPLEMENT - Remove member from family
     // TODO: DELETE /api/v1/family/{familyId}/member/{memberId}
     // TODO: Check if family still has minimum required members (usually 2)
     // TODO: If primary member removed, need to assign new primary
 
     @DeleteMapping("/remove-member/{familyId}/{memberId}")
-    ResponseEntity<?> removeMemberFromFamily(@PathVariable("familyId") Long familyId,
+    public ResponseEntity<Void> removeMemberFromFamily(@PathVariable("familyId") Long familyId,
             @PathVariable("memberId") Long memberId) {
         familyService.removeMemberFromFamily(familyId, memberId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
+    }
+
+    @GetMapping
+    public ResponseEntity<List<FamilyResponseDTO>> getAllFamilies() {
+        return ResponseEntity.ok(familyService.getAllFamilies());
+    }
+
+    @GetMapping("/{familyId}/members")
+    public ResponseEntity<List<MemberSummeryDTO>> getFamilyMembers(@PathVariable Long familyId) {
+        return ResponseEntity.ok(familyService.getFamilyMembers(familyId));
     }
 
     // TODO: IMPLEMENT - Get family by ID with all members
@@ -84,7 +101,7 @@ public class FamilyController {
 
     // updating family name
     @PutMapping("/update-family-name/{familyId}")
-    ResponseEntity<FamilyResponseDTO> updateFamilyName(@PathVariable("familyId") Long familyId,
+    public ResponseEntity<FamilyResponseDTO> updateFamilyName(@PathVariable("familyId") Long familyId,
             @RequestParam("familyName") String familyName) {
         FamilyResponseDTO updatedFamily = familyService.updateFamilyName(familyId, familyName);
         return new ResponseEntity<FamilyResponseDTO>(updatedFamily, HttpStatus.OK);
@@ -97,7 +114,7 @@ public class FamilyController {
 
     // delete family
     @DeleteMapping("/delete-family/{familyId}")
-    ResponseEntity<?> deleteFamily(@PathVariable("familyId") Long familyId) {
+    public ResponseEntity<Void> deleteFamily(@PathVariable("familyId") Long familyId) {
         familyService.deleteFamily(familyId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -109,8 +126,8 @@ public class FamilyController {
     // get all subscriptions for family
 
     @GetMapping("/{familyId}/subscriptions")
-    public ResponseEntity<SubscriptionDTO> getAllSubscriptions(@PathVariable("familyId") Long familyId) {
-        SubscriptionDTO subscriptions = familyService.getAllSubscriptionsForFamily(familyId);
+    public ResponseEntity<List<SubscriptionDTO>> getAllSubscriptions(@PathVariable("familyId") Long familyId) {
+        List<SubscriptionDTO> subscriptions = familyService.getAllSubscriptionsForFamily(familyId);
         return ResponseEntity.ok(subscriptions);
     }
 
