@@ -9,4 +9,6 @@ import pro.sachin.fity.model.Payments;
 public interface PyamentRepository extends JpaRepository<Payments, Long> {
      
     List<Payments> findBySubscriptionId(Long subscriptionId);
+
+    List<Payments> findAllByOrderByPaidOnDesc();
 }

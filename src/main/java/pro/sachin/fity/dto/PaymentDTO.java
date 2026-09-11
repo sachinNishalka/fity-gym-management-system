@@ -1,7 +1,7 @@
 package pro.sachin.fity.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 
@@ -18,6 +18,9 @@ public class PaymentDTO {
     // TODO: RESPONSE ONLY - For display purposes
     // TODO: Should show member/family name, not "subscription name"
     private String subscriptionName;
+
+    // RESPONSE ONLY - member name associated with the payment subscription
+    private String memberName;
 
     // TODO: REQUEST - Required field
     // TODO: CRITICAL - Change from 'double' to 'BigDecimal' for accurate money
@@ -41,6 +44,9 @@ public class PaymentDTO {
     // TODO: REQUEST - Optional field for payment notes
     // TODO: Change to "notes" (plural) to match SQL schema
     private String note;
+
+    // RESPONSE ONLY - timestamp at which the payment was recorded
+    private LocalDateTime paidOn;
 
     // TODO: MISSING - Add receivedByUserId field (REQUEST - required)
     // TODO: Track which staff member received the payment

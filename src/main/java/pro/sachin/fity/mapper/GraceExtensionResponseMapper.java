@@ -13,13 +13,15 @@ import pro.sachin.fity.model.Subscription;
 public interface GraceExtensionResponseMapper {
 
     @Mapping(source = "subscription.id", target = "subscriptionId")
-    @Mapping(source = "subscription.graceEndDate", target = "oldGraceEndDate")
+    @Mapping(source = "graceExtension.oldGraceEndDate", target = "oldGraceEndDate")
     @Mapping(source = "graceExtension.id", target = "id")
     @Mapping(source = "graceExtension.newGraceEndDate", target = "newGraceEndDate")
     @Mapping(source = "graceExtension.reason", target = "reason")
     @Mapping(source = "graceExtension.createdAt", target = "lastExtensionHappened")
     @Mapping(source = "member.firstName", target = "memberFirstName")
     @Mapping(source = "member.lastName", target = "memberLastName")
+    @Mapping(source = "member.id", target = "memberId")
+    @Mapping(source = "member.memberCode", target = "memberCode")
     @Mapping(source = "subscription.endDate", target = "originalPaymentDate")
     GraceExtensonResponseDTO toDto(GraceExtension graceExtension, Subscription subscription, Member member);
 }

@@ -2,6 +2,7 @@ package pro.sachin.fity.sercives.impl;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -38,16 +39,34 @@ public class FamilyServiceImpl implements FamilyService {
     @Transactional
     @Override
     public Family createFamily(FamilyDTO familyDTO) {
+        if (familyDTO == null || familyDTO.getFamilyName() == null || familyDTO.getFamilyName().isBlank()) {
+            throw new IllegalArgumentException("Family name is required.");
+        }
+        if (familyDTO.getMemberIds() == null || familyDTO.getMemberIds().isEmpty()) {
+            throw new IllegalArgumentException("Add at least one member to the family.");
+        }
+
+        List<Long> memberIds = familyDTO.getMemberIds().stream().distinct().toList();
+        if (memberIds.stream().anyMatch(memberId -> memberId == null)) {
+            throw new IllegalArgumentException("Every family member must have a valid ID.");
+        }
+
+        List<Member> members = memberRepository.findAllById(memberIds);
+        if (members.size() != memberIds.size()) {
+            throw new EntityNotFoundException("One or more selected members were not found.");
+        }
+        if (members.stream().anyMatch(member -> member.getFamily() != null)) {
+            throw new IllegalArgumentException("One or more selected members already belong to a family.");
+        }
+
         Family family = new Family();
-        family.setFamilyName(familyDTO.getFamilyName());
+        family.setFamilyName(familyDTO.getFamilyName().trim());
+        // Keep both sides of the relationship in sync. Member owns the foreign
+        // key, while Family is needed immediately for a correct API response.
+        family.setMembers(new HashSet<>(members));
         Family savedFamily = familyRepository.save(family);
 
-        // assign members
-
-        for (Long memberId : familyDTO.getMemberIds()) {
-            // finding the member infromation
-            Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException(
-                    "The member you are looking for is not registered yet (error occured while creating family and assingning)"));
+        for (Member member : members) {
             member.setFamily(savedFamily);
             memberRepository.save(member);
         }
@@ -61,6 +80,22 @@ public class FamilyServiceImpl implements FamilyService {
         Family family = familyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
                 "Requested family not found (get family by id method, family service implimentation)"));
 
+        return toResponse(family);
+    }
+
+    @Override
+    @Transactional
+    public List<FamilyResponseDTO> getAllFamilies() {
+        return familyRepository.findAll().stream().map(this::toResponse).toList();
+    }
+
+    @Override
+    @Transactional
+    public List<MemberSummeryDTO> getFamilyMembers(Long familyId) {
+        return getFamilyById(familyId).getMembers();
+    }
+
+    private FamilyResponseDTO toResponse(Family family) {
         FamilyResponseDTO familyResponseDTO = new FamilyResponseDTO();
         familyResponseDTO.setId(family.getId());
         familyResponseDTO.setFamilyName(family.getFamilyName());
@@ -84,6 +119,7 @@ public class FamilyServiceImpl implements FamilyService {
         return familyResponseDTO;
     }
 
+    @Transactional
     @Override
     public FamilyResponseDTO addMemberToFamily(Long familyId, Long memberId) {
 
@@ -98,6 +134,10 @@ public class FamilyServiceImpl implements FamilyService {
             throw new IllegalArgumentException("Member is already part of another family.");
         }
 
+        if (member.getFamily() != null) {
+            return getFamilyById(familyId);
+        }
+
         // Add the member to the family
         member.setFamily(family);
         memberRepository.save(member);
@@ -105,6 +145,7 @@ public class FamilyServiceImpl implements FamilyService {
         return getFamilyById(familyId);
     }
 
+    @Transactional
     @Override
     public void removeMemberFromFamily(Long familyId, Long memberId) {
 
@@ -125,31 +166,35 @@ public class FamilyServiceImpl implements FamilyService {
 
     }
 
+    @Transactional
     @Override
     public FamilyResponseDTO updateFamilyName(Long familyId, String familyName) {
         Family family = familyRepository.findById(familyId).orElseThrow(() -> new EntityNotFoundException(
                 "Requested family not found (update family name method, family service implimentation)"));
 
-        // Update the family name
-        family.setFamilyName(familyName);
+        if (familyName == null || familyName.isBlank()) {
+            throw new IllegalArgumentException("Family name is required.");
+        }
+        family.setFamilyName(familyName.trim());
         familyRepository.save(family);
 
         return getFamilyById(familyId);
     }
 
+    @Transactional
     @Override
     public void deleteFamily(Long familyId) {
 
         Family family = familyRepository.findById(familyId).orElseThrow(() -> new EntityNotFoundException(
                 "Requested family not found (delete family method, family service implimentation)"));
 
-        // Check if the family has active subscriptions
-        if (!family.getMembers().isEmpty()) {
-            throw new IllegalStateException("Cannot delete family with active members.");
+        if (subscriptionRepository.existsByFamilyIdAndStatus(familyId, pro.sachin.fity.model.SubscriptionStatus.ACTIVE)
+                || subscriptionRepository.existsByFamilyIdAndStatus(familyId, pro.sachin.fity.model.SubscriptionStatus.IN_GRACE)
+                || subscriptionRepository.existsByFamilyIdAndStatus(familyId, pro.sachin.fity.model.SubscriptionStatus.PENDING)) {
+            throw new IllegalStateException("Cannot delete a family with an active or pending subscription.");
         }
 
-        // Remove all member associations
-        for (Member member : family.getMembers()) {
+        for (Member member : new HashSet<>(family.getMembers())) {
             member.setFamily(null);
             memberRepository.save(member);
         }
@@ -158,23 +203,24 @@ public class FamilyServiceImpl implements FamilyService {
         familyRepository.delete(family);
     }
 
+    @Transactional
     @Override
-    public SubscriptionDTO getAllSubscriptionsForFamily(Long familyId) {
-        Subscription subscriptions = subscriptionRepository.findByFamilyId(familyId);
-
-        if (subscriptions == null) {
-            throw new EntityNotFoundException(
-                    "No subscriptions found for the specified family (get all subscriptions for family method, family service implimentation)");
+    public List<SubscriptionDTO> getAllSubscriptionsForFamily(Long familyId) {
+        if (!familyRepository.existsById(familyId)) {
+            throw new EntityNotFoundException("Requested family was not found.");
         }
-
-        SubscriptionDTO subscriptionDTO = subscriptionMapper.toDto(subscriptions);
-
-        return subscriptionDTO;
+        return subscriptionRepository.findByFamilyIdOrderByCreatedAtDesc(familyId).stream()
+                .map(subscriptionMapper::toDto)
+                .toList();
     }
 
     @Override
     public List<PlanDTO> getEligiblePlansForFamily(Long familyId) {
+        Family family = familyRepository.findById(familyId)
+                .orElseThrow(() -> new EntityNotFoundException("Requested family was not found."));
+        int familySize = family.getMembers().size();
         List<PlanDTO> eligiblePlans = planRepository.findByPlanType(PlanType.FAMILY).stream()
+                .filter(plan -> plan.getMaximumFamilyMembers() >= familySize)
                 .map(plan -> {
                     PlanDTO planDTO = new PlanDTO();
                     planDTO.setId(plan.getId());

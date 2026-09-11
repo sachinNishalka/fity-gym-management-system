@@ -79,6 +79,8 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
         Subscription findByFamilyId(Long familyId);
 
+        List<Subscription> findByFamilyIdOrderByCreatedAtDesc(Long familyId);
+
         Optional<Subscription> findByFamilyIdAndStatus(Long familyId, SubscriptionStatus status);
 
         @Query("SELECT DISTINCT s FROM Subscription s " +

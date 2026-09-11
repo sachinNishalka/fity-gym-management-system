@@ -120,6 +120,8 @@ public interface SubscriptionService {
 
     List<Subscription> getAllSubscriptions();
 
+    List<SubscriptionDTO> getSubscriptionsInGrace();
+
     void deleteSubscription(Long subscriptionId);
 
     MemberDetailsDTO getSubscriptionByMemberId(Long memberId);

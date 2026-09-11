@@ -212,6 +212,11 @@ public class SubscriptionController {
         return new ResponseEntity<List<SubscriptionDTO>>(allSubscriptions, HttpStatus.OK);
     }
 
+    @GetMapping("/in-grace")
+    public ResponseEntity<List<SubscriptionDTO>> getSubscriptionsInGrace() {
+        return ResponseEntity.ok(subscriptionService.getSubscriptionsInGrace());
+    }
+
     @DeleteMapping("/delete/{subscriptionId}")
     public ResponseEntity<Void> deleteSubscription(@PathVariable("subscriptionId") Long subscriptionId) {
         subscriptionService.deleteSubscription(subscriptionId);

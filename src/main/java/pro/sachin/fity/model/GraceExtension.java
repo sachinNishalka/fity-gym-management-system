@@ -27,7 +27,7 @@ public class GraceExtension {
 
     // Who authorized the extension (critical for accountability)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "extended_by_user_id", nullable = false)
+    @JoinColumn(name = "extended_by_user_id")
     private User extendedByUser;
 
     // Audit trail: old vs new dates
